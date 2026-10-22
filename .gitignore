@@ -18,6 +18,11 @@ expo-env.d.ts
 *.key
 *.mobileprovision
 
+# IDEs and editors
+.idea/
+.vscode/
+
+
 # Metro
 .metro-health-check*
 
@@ -41,3 +46,4 @@ example
 # generated native folders
 /ios
 /android
+
