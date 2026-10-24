@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, router } from "expo-router";
 import {
@@ -12,22 +11,25 @@ import {
   View,
 } from "react-native";
 import tw from "twrnc";
+import { signIn } from "@/services/auth";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  function handleLogin() {
+  async function handleLogin() {
     if (!email.trim() || !password) {
-      Alert.alert(
-        "Missing information",
-        "Enter your email and password."
-      );
+      Alert.alert("Missing information", "Enter your email and password.");
       return;
     }
+    try {
+      await signIn(email, password);
+    } catch (error) {
+      const message =  error instanceof Error ? error.message : "Something went wrong. Please try again.";
+      Alert.alert("Sign in failed", message);
+    }
 
-    router.replace("/");
   }
 
   return (
@@ -40,22 +42,15 @@ export default function Login() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={tw`flex-grow justify-center px-6 py-8`}
       >
-        <Pressable
-          onPress={() => router.back()}
-          style={tw`self-start mb-9`}
-        >
-          <Text style={tw`text-[#174C3C] font-semibold text-base`}>
-            ←  Back
-          </Text>
+        <Pressable onPress={() => router.back()} style={tw`self-start mb-9`}>
+          <Text style={tw`text-[#174C3C] font-semibold text-base`}>← Back</Text>
         </Pressable>
 
         <View style={tw`mb-8`}>
           <View
             style={tw`w-14 h-14 rounded-2xl bg-[#DCE8D8] items-center justify-center mb-6`}
           >
-            <Text style={tw`text-[#174C3C] text-2xl font-bold`}>
-              ز
-            </Text>
+            <Text style={tw`text-[#174C3C] text-2xl font-bold`}>ز</Text>
           </View>
 
           <Text style={tw`text-3xl font-bold text-[#174C3C]`}>
@@ -65,14 +60,11 @@ export default function Login() {
           <View style={tw`w-12 h-1 rounded-full bg-[#C59A55] mt-4 mb-4`} />
 
           <Text style={tw`text-sm text-[#777D72] leading-6`}>
-            Sign in to manage your assets and
-            continue your zakat journey.
+            Sign in to manage your assets and continue your zakat journey.
           </Text>
         </View>
 
-        <View
-          style={tw`bg-white rounded-[28px] p-5 border border-[#EAE8DF]`}
-        >
+        <View style={tw`bg-white rounded-[28px] p-5 border border-[#EAE8DF]`}>
           <Text style={tw`text-sm font-semibold text-[#24382D] mb-2`}>
             Email address
           </Text>
@@ -121,7 +113,7 @@ export default function Login() {
             onPress={() =>
               Alert.alert(
                 "Coming soon",
-                "Password recovery will be added with authentication."
+                "Password recovery will be added with authentication.",
               )
             }
             style={tw`self-end mt-4 mb-7`}
@@ -138,15 +130,11 @@ export default function Login() {
               pressed && { opacity: 0.8 },
             ]}
           >
-            <Text style={tw`text-white font-bold text-base`}>
-              Sign in  →
-            </Text>
+            <Text style={tw`text-white font-bold text-base`}>Sign in →</Text>
           </Pressable>
 
           <View style={tw`flex-row justify-center flex-wrap mt-6`}>
-            <Text style={tw`text-[#777D72] text-sm`}>
-              New to ZakatApp?{" "}
-            </Text>
+            <Text style={tw`text-[#777D72] text-sm`}>New to ZakatApp? </Text>
 
             <Link
               href="/(auth)/register"

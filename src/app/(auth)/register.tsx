@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, router } from "expo-router";
 import {
@@ -12,6 +11,7 @@ import {
   View,
 } from "react-native";
 import tw from "twrnc";
+import { signUp } from "@/services/auth";
 
 export default function RegisterScreen() {
   const [name, setName] = useState("");
@@ -21,7 +21,7 @@ export default function RegisterScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  function handleRegister() {
+  async function handleRegister() {
     if (!name.trim() || !email.trim() || !password || !confirmPassword) {
       Alert.alert("Missing information", "Please complete all fields.");
       return;
@@ -41,8 +41,38 @@ export default function RegisterScreen() {
       Alert.alert("Password mismatch", "Your passwords do not match.");
       return;
     }
+    try {
+      const result = await signUp({
+        fullName: name,
+        email,
+        password,
+      });
 
-    router.replace("/");
+      if (!result.session) {
+        Alert.alert(
+          "Check your email",
+          "If a confirmation email was sent, follow its instructions before signing in.",
+        );
+        return;
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+
+      const message = error instanceof Error ? error.message : "";
+
+      if (message.toLowerCase().includes("rate limit")) {
+        Alert.alert(
+          "Too many attempts",
+          "Email sending is temporarily limited. Please try again later.",
+        );
+        return;
+      }
+
+      Alert.alert(
+        "Registration failed",
+        message || "Something went wrong. Please try again.",
+      );
+    }
   }
 
   const fields = [
@@ -86,22 +116,15 @@ export default function RegisterScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={tw`flex-grow justify-center px-6 py-8`}
       >
-        <Pressable
-          onPress={() => router.back()}
-          style={tw`self-start mb-7`}
-        >
-          <Text style={tw`text-[#174C3C] font-semibold text-base`}>
-            ←  Back
-          </Text>
+        <Pressable onPress={() => router.back()} style={tw`self-start mb-7`}>
+          <Text style={tw`text-[#174C3C] font-semibold text-base`}>← Back</Text>
         </Pressable>
 
         <View style={tw`mb-7`}>
           <View
             style={tw`w-14 h-14 rounded-2xl bg-[#DCE8D8] items-center justify-center mb-5`}
           >
-            <Text style={tw`text-[#174C3C] text-2xl font-bold`}>
-              ز
-            </Text>
+            <Text style={tw`text-[#174C3C] text-2xl font-bold`}>ز</Text>
           </View>
 
           <Text style={tw`text-3xl font-bold text-[#174C3C]`}>
@@ -111,14 +134,11 @@ export default function RegisterScreen() {
           <View style={tw`w-12 h-1 rounded-full bg-[#C59A55] mt-4 mb-4`} />
 
           <Text style={tw`text-sm text-[#777D72] leading-6`}>
-            A simpler way to calculate, organize,
-            and manage your zakat.
+            A simpler way to calculate, organize, and manage your zakat.
           </Text>
         </View>
 
-        <View
-          style={tw`bg-white rounded-[28px] p-5 border border-[#EAE8DF]`}
-        >
+        <View style={tw`bg-white rounded-[28px] p-5 border border-[#EAE8DF]`}>
           {fields.map((field) => {
             const isEmail = field.type === "email";
             const isName = field.type === "name";
@@ -131,9 +151,7 @@ export default function RegisterScreen() {
 
             return (
               <View key={field.type} style={tw`mb-5`}>
-                <Text
-                  style={tw`text-sm font-semibold text-[#24382D] mb-2`}
-                >
+                <Text style={tw`text-sm font-semibold text-[#24382D] mb-2`}>
                   {field.label}
                 </Text>
 
@@ -170,9 +188,7 @@ export default function RegisterScreen() {
                       }
                       hitSlop={10}
                     >
-                      <Text
-                        style={tw`text-[#174C3C] text-xs font-bold`}
-                      >
+                      <Text style={tw`text-[#174C3C] text-xs font-bold`}>
                         {secure ? "SHOW" : "HIDE"}
                       </Text>
                     </Pressable>
@@ -182,9 +198,7 @@ export default function RegisterScreen() {
             );
           })}
 
-          <View
-            style={tw`bg-[#F1F4EC] rounded-xl px-4 py-3 mb-5`}
-          >
+          <View style={tw`bg-[#F1F4EC] rounded-xl px-4 py-3 mb-5`}>
             <Text style={tw`text-xs text-[#536B54] leading-5`}>
               Password must contain at least 8 characters.
             </Text>
@@ -198,7 +212,7 @@ export default function RegisterScreen() {
             ]}
           >
             <Text style={tw`text-white font-bold text-base`}>
-              Create account  →
+              Create account →
             </Text>
           </Pressable>
 
@@ -207,18 +221,13 @@ export default function RegisterScreen() {
               Already have an account?{" "}
             </Text>
 
-            <Link
-              href="/login"
-              style={tw`text-[#174C3C] font-bold text-sm`}
-            >
+            <Link href="/login" style={tw`text-[#174C3C] font-bold text-sm`}>
               Sign in
             </Link>
           </View>
         </View>
 
-        <Text
-          style={tw`text-center text-xs text-[#92968C] mt-6 leading-5`}
-        >
+        <Text style={tw`text-center text-xs text-[#92968C] mt-6 leading-5`}>
           Start your journey to mindful giving.
         </Text>
       </ScrollView>
