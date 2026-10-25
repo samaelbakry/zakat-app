@@ -1,8 +1,10 @@
+import { Banknote, Gem, History, Sparkles } from "lucide-react-native";
+
 export const zakatOptions = [
   {
     title: "Money",
     subtitle: "Cash & savings",
-    icon: "↗",
+    icon: Banknote, 
     route: "/money",
     bg: "#E2EDE0",
     accent: "#174C3C",
@@ -10,7 +12,7 @@ export const zakatOptions = [
   {
     title: "Gold",
     subtitle: "Weight & purity",
-    icon: "◇",
+    icon: Gem , 
     route: "/gold",
     bg: "#F4E9D3",
     accent: "#A77A35",
@@ -18,7 +20,7 @@ export const zakatOptions = [
   {
     title: "Zakat Al-Fitr",
     subtitle: "People & amount",
-    icon: "✳",
+    icon: Sparkles, 
     route: "/fitr",
     bg: "#E8EDE2",
     accent: "#52744D",
@@ -26,7 +28,7 @@ export const zakatOptions = [
   {
     title: "History",
     subtitle: "Your saved calculations",
-    icon: "◷",
+    icon: History,
     route: "/history",
     bg: "#E9E8DF",
     accent: "#6D725F",
