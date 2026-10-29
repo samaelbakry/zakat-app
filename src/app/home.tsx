@@ -4,8 +4,14 @@ import { useAuth } from "@/context/AuthContext";
 import { router } from "expo-router";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import tw from "twrnc";
+import { useCallback, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { getSavedAssets, type SavedAsset } from "@/services/assets";
 
 export default function HomeScreen() {
+  const [assets, setAssets] = useState<SavedAsset[]>([]);
+  const [assetsLoading, setAssetsLoading] = useState(true);
+  const [assetsError, setAssetsError] = useState(false);
   const { user } = useAuth();
 
   const fullName =
@@ -14,6 +20,38 @@ export default function HomeScreen() {
       : "";
 
   const firstName = fullName ? fullName.split(/\s+/)[0] : "there";
+
+  const loadAssets = useCallback(async () => {
+    setAssetsLoading(true);
+    setAssetsError(false);
+
+    try {
+      const savedAssets = await getSavedAssets();
+      setAssets(savedAssets);
+    } catch (error) {
+      console.error("Failed to load home assets:", error);
+      setAssetsError(true);
+    } finally {
+      setAssetsLoading(false);
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      void loadAssets();
+    }, [loadAssets]),
+  );
+
+  const assetTotals = assets.reduce<Record<string, number>>((totals, asset) => {
+    const value =
+      asset.asset_type === "money"
+        ? (asset.amount ?? 0)
+        : (asset.weight_grams ?? 0) * (asset.price_per_gram ?? 0);
+
+    totals[asset.currency] = (totals[asset.currency] ?? 0) + value;
+
+    return totals;
+  }, {});
 
   return (
     <View style={tw`flex-1 bg-[#FAF9F5]`}>
@@ -80,23 +118,49 @@ export default function HomeScreen() {
                 Financial Overview
               </Text>
 
-              <Text
-                style={tw`text-white text-2.5xl font-bold mt-3 tracking-tight`}
-              >
-                No assets yet
-              </Text>
+              {assetsLoading ? (
+                <Text style={tw`text-white text-xl font-bold mt-3`}>
+                  Loading assets...
+                </Text>
+              ) : assetsError ? (
+                <>
+                  <Text style={tw`text-white text-xl font-bold mt-3`}>
+                    Unable to load assets
+                  </Text>
 
-              <Text
-                style={tw`text-[#C8D9C4] text-xs mt-2.5 leading-5 max-w-[220px]`}
-              >
-                Add your money or gold to keep track of your assets.
-              </Text>
-            </View>
+                  <Pressable onPress={() => void loadAssets()}>
+                    <Text style={tw`text-[#E4D0A5] text-xs mt-2 underline`}>
+                      Try again
+                    </Text>
+                  </Pressable>
+                </>
+              ) : assets.length === 0 ? (
+                <>
+                  <Text
+                    style={tw`text-white text-2xl font-bold mt-3 tracking-tight`}
+                  >
+                    No assets yet
+                  </Text>
 
-            <View
-              style={tw`w-13 h-13 rounded-2xl bg-white/10 items-center justify-center border border-white/20`}
-            >
-              <Text style={tw`text-[#E4D0A5] text-2xl font-bold`}>ز</Text>
+                  <Text
+                    style={tw`text-[#C8D9C4] text-xs mt-2.5 leading-5 max-w-[220px]`}
+                  >
+                    Add your money or gold to keep track of your assets.
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <Text
+                    style={tw`text-white text-2xl font-bold mt-3 tracking-tight`}
+                  >
+                    {assets.length} {assets.length === 1 ? "Asset" : "Assets"}
+                  </Text>
+
+                  <Text style={tw`text-[#C8D9C4] text-xs mt-2.5 leading-5`}>
+                    Your saved financial assets at a glance.
+                  </Text>
+                </>
+              )}
             </View>
           </View>
 
@@ -107,13 +171,15 @@ export default function HomeScreen() {
               tw`flex-row items-center justify-between bg-white rounded-2xl px-5 py-4 shadow-sm`,
               pressed && tw`opacity-90 transform scale-[0.98]`,
             ]}
+            onPress={() => router.push("/assets")}
           >
             <View style={tw`flex-1 mr-2`}>
               <Text style={tw`text-[#174C3C] font-bold text-sm`}>
                 Manage saved assets
               </Text>
+
               <Text style={tw`text-[#648064] text-xs mt-0.5`}>
-                Add and update your assets
+                View, add and manage your assets
               </Text>
             </View>
 
@@ -130,6 +196,7 @@ export default function HomeScreen() {
             tw`bg-[#F0F4ED] border border-[#DCE5D5] rounded-[28px] p-5 mb-8`,
             pressed && tw`opacity-85 transform scale-[0.98]`,
           ]}
+          onPress={() => router.push("/quick-calculation")}
         >
           <View style={tw`flex-row items-center`}>
             <View

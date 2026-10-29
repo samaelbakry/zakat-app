@@ -1,4 +1,4 @@
-
+import { createSavedAsset } from "@/services/assets";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -21,10 +21,13 @@ const goldPurities = [
 ];
 
 export default function Gold() {
+  const [name, setName] = useState("Gold amount");
   const [weight, setWeight] = useState("");
   const [pricePerGram, setPricePerGram] = useState("");
+  const [currency, setCurrency] = useState<"EGP" | "USD">("EGP");
   const [purity, setPurity] = useState(21);
   const [showResult, setShowResult] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const numericWeight = Number(weight);
   const numericPrice = Number(pricePerGram);
@@ -57,6 +60,52 @@ export default function Gold() {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
+  }
+
+  async function saveAsset() {
+    if (!name.trim()) {
+      Alert.alert("Missing name", "Enter a name for this asset.");
+      return;
+    }
+
+    if (!isValid) {
+      Alert.alert(
+        "Invalid values",
+        "Enter a valid weight and price greater than zero.",
+      );
+      return;
+    }
+
+    try {
+      setSaving(true);
+
+      await createSavedAsset({
+        asset_type: "gold",
+        name: name.trim(),
+        currency,
+        weight_grams: numericWeight,
+        purity: purity as 18 | 21 | 22 | 24,
+        price_per_gram: numericPrice,
+      });
+
+      Alert.alert("Saved successfully", "Your gold asset has been saved.", [
+        {
+          text: "OK",
+          onPress: () => router.back(),
+        },
+      ]);
+    } catch (error) {
+      console.error("Save gold asset error:", error);
+
+      Alert.alert(
+        "Couldn't save asset",
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again.",
+      );
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -102,6 +151,56 @@ export default function Gold() {
         <View style={tw`bg-white rounded-3xl p-5 border border-[#EAE8DF]`}>
           <Text style={tw`text-sm font-bold text-[#1A2E26] mb-3`}>
             Gold purity
+          </Text>
+          <TextInput
+            value={name}
+            onChangeText={setName}
+            placeholder="e.g. Emergency savings"
+            placeholderTextColor="#A2A497"
+            style={tw`border border-[#E5E2D8] bg-[#FAF9F5] rounded-2xl px-5 py-4 text-base text-[#1A2E26] mb-6`}
+          />
+
+          <Text
+            style={tw`text-xs font-bold uppercase tracking-wide text-[#5C6356] mb-3`}
+          >
+            Currency
+          </Text>
+
+          <View style={tw`flex-row gap-3 mb-6`}>
+            {(["EGP", "USD"] as const).map((item) => {
+              const selected = currency === item;
+
+              return (
+                <Pressable
+                  key={item}
+                  onPress={() => {
+                    setCurrency(item);
+                    setShowResult(false);
+                  }}
+                  style={[
+                    tw`flex-1 py-3.5 rounded-xl items-center border`,
+                    selected
+                      ? tw`bg-[#174C3C] border-[#174C3C]`
+                      : tw`bg-[#FAF9F5] border-[#E5E2D8]`,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      tw`font-bold`,
+                      { color: selected ? "#FFFFFF" : "#5C6356" },
+                    ]}
+                  >
+                    {item}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          <Text
+            style={tw`text-xs font-bold uppercase tracking-wide text-[#5C6356] mb-2.5`}
+          >
+            Total amount ({currency})
           </Text>
 
           <View style={tw`flex-row flex-wrap gap-2 mb-6`}>
@@ -152,7 +251,8 @@ export default function Gold() {
           />
 
           <Text style={tw`text-sm font-bold text-[#1A2E26] mb-3`}>
-            Price per gram ({goldPurities.find((item) => item.purity === purity)?.label})
+            Price per gram (
+            {goldPurities.find((item) => item.purity === purity)?.label})
           </Text>
 
           <TextInput
@@ -181,6 +281,19 @@ export default function Gold() {
           >
             <Text style={tw`text-white font-bold text-base`}>
               Calculate estimate
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={saveAsset}
+            disabled={saving}
+            style={({ pressed }) => [
+              tw`rounded-2xl border border-[#174C3C] py-4 items-center mt-3`,
+              pressed && tw`opacity-80`,
+              saving && tw`opacity-50`,
+            ]}
+          >
+            <Text style={tw`text-[#174C3C] font-bold text-base`}>
+              {saving ? "Saving..." : "Save asset"}
             </Text>
           </Pressable>
         </View>
