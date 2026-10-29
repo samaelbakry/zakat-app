@@ -55,192 +55,148 @@ export default function HomeScreen() {
 
   return (
     <View style={tw`flex-1 bg-[#FAF9F5]`}>
-      <View
-        style={tw`absolute -top-20 -right-20 w-72 h-72 rounded-full bg-[#174C3C]/5`}
-      />
-      <View
-        style={tw`absolute top-1/3 -left-20 w-60 h-60 rounded-full bg-[#DCE8D8]/20 `}
-      />
-
       <ScrollView
         style={tw`flex-1`}
-        contentContainerStyle={tw`px-6 pt-16 pb-12`}
+        contentContainerStyle={tw`px-6 pt-12 pb-10`}
         showsVerticalScrollIndicator={false}
       >
-        <View style={tw`flex-row items-center justify-between mb-8`}>
+        <View style={tw`flex-row items-center justify-between my-6`}>
           <View style={tw`flex-1 mr-4`}>
-            <View style={tw`flex-row items-center mb-2.5`}>
-              <View style={tw`w-2 h-2 rounded-full bg-[#C59A55] mr-2`} />
-              <Text
-                style={tw`text-[11px] font-bold tracking-wider text-[#648064] uppercase`}
-              >
-                Your Personal Zakat Space
-              </Text>
-            </View>
-
-            <Text style={tw`text-2xl font-bold text-[#1A2E26] tracking-tight`}>
-              Assalamu Alaikum, {firstName}
+            <Text
+              style={tw`text-[10px] font-bold uppercase tracking-[2px] text-[#9A7B45] mb-2`}
+            >
+              Your personal zakat space
             </Text>
 
-            <Text style={tw`text-sm text-[#6B7265] mt-1.5`}>
+            <Text
+              style={tw`font-display text-[25px] leading-8 font-bold text-[#174C3C]`}
+            >
+              Assalamu Alaikum,
+            </Text>
+
+            <Text
+              style={tw`font-display text-[25px] leading-8 italic text-[#174C3C]`}
+            >
+              {firstName}
+            </Text>
+
+            <Text style={tw`text-sm text-[#777D72] mt-2`}>
               Let's organize your giving.
             </Text>
           </View>
-
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Open profile"
-            style={({ pressed }) => [
-              tw`w-13 h-13 rounded-2xl bg-white border border-[#E5E2D8] items-center justify-center shadow-sm shadow-black/5`,
-              pressed && tw`opacity-80 transform scale-95`,
-            ]}
-          >
-            <View
-              style={tw`w-9 h-9 rounded-xl bg-[#F0F4ED] items-center justify-center`}
-            >
-              <Text style={tw`text-xl text-[#174C3C]`}>👤</Text>
-            </View>
-          </Pressable>
         </View>
 
-        <View
-          style={tw`bg-[#174C3C] rounded-[32px] p-7 mb-6 overflow-hidden shadow-xl shadow-[#174C3C]/20 relative`}
-        >
-          <View
-            style={tw`absolute -right-8 -bottom-8 w-40 h-40 rounded-full bg-white/5`}
-          />
+        <View style={tw`bg-[#174C3C] rounded-[26px] p-5 mb-5 overflow-hidden`}>
+          <View style={tw`flex-row items-center justify-between`}>
+            <Text
+              style={tw`text-[10px] font-bold uppercase tracking-[2px] text-[#DCE5D5]`}
+            >
+              Financial overview
+            </Text>
 
-          <View style={tw`flex-row items-start justify-between`}>
-            <View style={tw`flex-1 mr-3`}>
-              <Text
-                style={tw`text-[#C8D9C4] text-xs font-semibold uppercase tracking-wider`}
-              >
-                Financial Overview
-              </Text>
-
-              {assetsLoading ? (
-                <Text style={tw`text-white text-xl font-bold mt-3`}>
-                  Loading assets...
-                </Text>
-              ) : assetsError ? (
-                <>
-                  <Text style={tw`text-white text-xl font-bold mt-3`}>
-                    Unable to load assets
-                  </Text>
-
-                  <Pressable onPress={() => void loadAssets()}>
-                    <Text style={tw`text-[#E4D0A5] text-xs mt-2 underline`}>
-                      Try again
-                    </Text>
-                  </Pressable>
-                </>
-              ) : assets.length === 0 ? (
-                <>
-                  <Text
-                    style={tw`text-white text-2xl font-bold mt-3 tracking-tight`}
-                  >
-                    No assets yet
-                  </Text>
-
-                  <Text
-                    style={tw`text-[#C8D9C4] text-xs mt-2.5 leading-5 max-w-[220px]`}
-                  >
-                    Add your money or gold to keep track of your assets.
-                  </Text>
-                </>
-              ) : (
-                <>
-                  <Text
-                    style={tw`text-white text-2xl font-bold mt-3 tracking-tight`}
-                  >
-                    {assets.length} {assets.length === 1 ? "Asset" : "Assets"}
-                  </Text>
-
-                  <Text style={tw`text-[#C8D9C4] text-xs mt-2.5 leading-5`}>
-                    Your saved financial assets at a glance.
-                  </Text>
-                </>
-              )}
-            </View>
+            <View style={tw`w-2 h-2 rounded-full bg-[#D9BD83]`} />
           </View>
 
-          <View style={tw`h-px bg-white/15 my-6`} />
+          {assetsLoading ? (
+            <Text style={tw`text-white text-lg font-semibold mt-5`}>
+              Loading assets...
+            </Text>
+          ) : assetsError ? (
+            <>
+              <Text style={tw`text-white text-lg font-semibold mt-5`}>
+                Unable to load assets
+              </Text>
+
+              <Pressable onPress={() => void loadAssets()}>
+                <Text style={tw`text-[#E4D0A5] text-xs mt-2 underline`}>
+                  Try again
+                </Text>
+              </Pressable>
+            </>
+          ) : assets.length === 0 ? (
+            <>
+              <Text style={tw`font-display text-3xl text-white mt-5`}>
+                Start with one.
+              </Text>
+
+              <Text style={tw`text-xs leading-5 text-[#DCE5D5] mt-2`}>
+                Add your money or gold to begin organizing your assets.
+              </Text>
+            </>
+          ) : (
+            <>
+              <View style={tw`flex-row items-baseline mt-5`}>
+                <Text style={tw`font-display text-4xl text-white`}>
+                  {assets.length.toString().padStart(2, "0")}
+                </Text>
+
+                <Text style={tw`text-sm text-[#DCE5D5] ml-3`}>
+                  {assets.length === 1 ? "saved asset" : "saved assets"}
+                </Text>
+              </View>
+
+              <Text style={tw`text-xs leading-5 text-[#DCE5D5] mt-2`}>
+                Your saved financial assets, all in one place.
+              </Text>
+            </>
+          )}
+
+          <View style={tw`h-px bg-white/20 my-5`} />
 
           <Pressable
-            style={({ pressed }) => [
-              tw`flex-row items-center justify-between bg-white rounded-2xl px-5 py-4 shadow-sm`,
-              pressed && tw`opacity-90 transform scale-[0.98]`,
-            ]}
             onPress={() => router.push("/assets")}
+            accessibilityRole="button"
+            style={({ pressed }) => [
+              tw`flex-row items-center justify-between bg-[#FAF9F5] rounded-xl px-4 py-3.5`,
+              pressed && { opacity: 0.85 },
+            ]}
           >
-            <View style={tw`flex-1 mr-2`}>
-              <Text style={tw`text-[#174C3C] font-bold text-sm`}>
-                Manage saved assets
-              </Text>
+            <Text style={tw`text-sm font-bold text-[#174C3C]`}>
+              Manage saved assets
+            </Text>
 
-              <Text style={tw`text-[#648064] text-xs mt-0.5`}>
-                View, add and manage your assets
-              </Text>
-            </View>
-
-            <View
-              style={tw`w-8 h-8 rounded-full bg-[#F0F4ED] items-center justify-center`}
-            >
-              <Text style={tw`text-[#174C3C] text-sm font-bold`}>→</Text>
-            </View>
+            <Text style={tw`text-lg text-[#174C3C]`}>→</Text>
           </Pressable>
         </View>
 
         <Pressable
-          style={({ pressed }) => [
-            tw`bg-[#F0F4ED] border border-[#DCE5D5] rounded-[28px] p-5 mb-8`,
-            pressed && tw`opacity-85 transform scale-[0.98]`,
-          ]}
           onPress={() => router.push("/quick-calculation")}
+          accessibilityRole="button"
+          style={({ pressed }) => [
+            tw`flex-row items-center py-4 px-4 mb-8 rounded-2xl border border-[#DCE5D5] bg-[#F0F4ED]`,
+            pressed && { opacity: 0.8 },
+          ]}
         >
-          <View style={tw`flex-row items-center`}>
-            <View
-              style={tw`w-12 h-12 rounded-2xl bg-white items-center justify-center mr-4 border border-[#174C3C]/10 shadow-sm`}
-            >
-              <Text style={tw`text-[#174C3C] text-2xl`}>⚡</Text>
-            </View>
-
-            <View style={tw`flex-1`}>
-              <Text style={tw`text-base font-bold text-[#174C3C]`}>
-                Quick calculation
-              </Text>
-              <Text style={tw`text-xs text-[#5C6A5A] mt-1 leading-5`}>
-                Calculate your zakat without saving your assets.
-              </Text>
-            </View>
-
-            <View
-              style={tw`w-8 h-8 rounded-full bg-[#174C3C] items-center justify-center ml-3`}
-            >
-              <Text style={tw`text-white text-xs font-bold`}>→</Text>
-            </View>
+          <View
+            style={tw`w-10 h-10 rounded-xl bg-white items-center justify-center mr-3`}
+          >
+            <Text style={tw`text-lg text-[#174C3C]`}>↗</Text>
           </View>
+
+          <View style={tw`flex-1 mr-3`}>
+            <Text style={tw`text-sm font-bold text-[#174C3C]`}>
+              Quick calculation
+            </Text>
+
+            <Text style={tw`text-xs leading-5 text-[#6B7867] mt-1`}>
+              Calculate without saving your assets.
+            </Text>
+          </View>
+
+          <Text style={tw`text-lg text-[#174C3C]`}>→</Text>
         </Pressable>
 
-        <View style={tw`flex-row items-end justify-between mb-5`}>
-          <View style={tw`flex-1 mr-3`}>
-            <Text style={tw`text-xl font-bold text-[#1A2E26] tracking-tight`}>
-              Calculate your zakat
-            </Text>
+        <View style={tw`mb-4`}>
+          <Text style={tw`font-display text-[25px] text-[#174C3C]`}>
+            Calculate zakat
+          </Text>
 
-            <Text style={tw`text-xs text-[#85897F] mt-1`}>
-              Choose what you'd like to calculate.
-            </Text>
-          </View>
-
-          <View
-            style={tw`w-9 h-9 rounded-xl bg-[#E6EBDD] items-center justify-center border border-[#174C3C]/10`}
-          >
-            <Text style={tw`text-[#174C3C] text-sm`}>✦</Text>
-          </View>
+          <Text style={tw`text-xs text-[#85897F] mt-2`}>
+            Choose what you'd like to calculate.
+          </Text>
         </View>
 
-        <View style={tw`flex-col`}>
+        <View>
           {zakatOptions?.map((item: any) => {
             const IconComponent = item.icon;
 
@@ -251,79 +207,51 @@ export default function HomeScreen() {
                 accessibilityRole="button"
                 accessibilityLabel={`Calculate ${item.title}`}
                 style={({ pressed }) => [
-                  tw`w-full flex-row items-center bg-white/90 border border-[#EAE8DF] rounded-[28px] p-5 mb-4 shadow-md shadow-black/5`,
-                  pressed && { opacity: 0.85, transform: [{ scale: 0.98 }] },
+                  tw`flex-row items-center py-4 border-b border-[#E9E6DC]`,
+                  pressed && { opacity: 0.65 },
                 ]}
               >
                 <View
                   style={[
-                    tw`w-14 h-14 rounded-2xl items-center justify-center border border-black/5 mr-4`,
+                    tw`w-11 h-11 rounded-xl items-center justify-center mr-4`,
                     { backgroundColor: item.bg },
                   ]}
                 >
                   <IconComponent
-                    size={24}
+                    size={21}
                     color={item.accent}
-                    strokeWidth={2}
+                    strokeWidth={1.8}
                   />
                 </View>
 
-                <View style={tw`flex-1`}>
-                  <Text style={tw`text-base font-bold text-[#1A2E26]`}>
+                <View style={tw`flex-1 mr-3`}>
+                  <Text style={tw`text-sm font-bold text-[#24382D]`}>
                     {item.title}
                   </Text>
 
-                  <Text style={tw`text-xs text-[#85897F] mt-1.5 leading-5`}>
+                  <Text style={tw`text-xs leading-5 text-[#85897F] mt-1`}>
                     {item.subtitle}
                   </Text>
-
-                  <View style={tw`flex-row items-center mt-3`}>
-                    <Text
-                      style={[
-                        tw`text-xs font-bold tracking-wide`,
-                        { color: item.accent },
-                      ]}
-                    >
-                      Explore
-                    </Text>
-
-                    <Text
-                      style={[
-                        tw`text-sm ml-1.5 font-bold`,
-                        { color: item.accent },
-                      ]}
-                    >
-                      →
-                    </Text>
-                  </View>
                 </View>
 
-                <View
-                  style={tw`w-9 h-9 rounded-full bg-[#F7F5EF] items-center justify-center ml-3`}
-                >
-                  <Text style={tw`text-[#174C3C] text-lg`}>›</Text>
-                </View>
+                <Text style={tw`text-lg text-[#9A7B45]`}>→</Text>
               </Pressable>
             );
           })}
         </View>
 
-        <View
-          style={tw`bg-white/80 rounded-[24px] p-5 mt-2 mb-6 border border-[#EAE8DF] shadow-sm shadow-black/5`}
-        >
-          <View style={tw`flex-row items-center mb-2.5`}>
-            <View
-              style={tw`w-8 h-8 rounded-xl bg-[#F0F4ED] items-center justify-center mr-3 border border-[#174C3C]/10`}
-            >
-              <Text style={tw`text-[#174C3C] text-xs font-bold`}>ℹ</Text>
-            </View>
+        <View style={tw`mt-8 mb-6`}>
+          <View style={tw`flex-row items-center mb-3`}>
+            <View style={tw`w-1 h-4 rounded-full bg-[#C59A55] mr-2`} />
 
-            <Text style={tw`text-sm font-bold text-[#174C3C]`}>
-              A note on your zakat
+            <Text
+              style={tw`text-[10px] font-bold uppercase tracking-[2px] text-[#648064]`}
+            >
+              A gentle reminder
             </Text>
           </View>
 
-          <Text style={tw`text-xs text-[#61725D] leading-5`}>
+          <Text style={tw`text-xs leading-6 text-[#777D72]`}>
             Your zakat calculation depends on the applicable rules, nisab
             threshold, and the information you provide. Review your
             circumstances before making a payment.

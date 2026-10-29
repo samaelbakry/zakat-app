@@ -108,37 +108,49 @@ export default function RegisterScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={tw`flex-1 bg-[#F7F5EF]`}
+      style={tw`flex-1 bg-[#FAF9F5]`}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScrollView
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={tw`flex-grow justify-center px-6 py-8`}
+        contentContainerStyle={tw`flex-grow px-6 pt-6 pb-8`}
       >
-        <Pressable onPress={() => router.back()} style={tw`self-start mb-7`}>
-          <Text style={tw`text-[#174C3C] font-semibold text-base`}>← Back</Text>
+        <Pressable
+          onPress={() => router.back()}
+          style={tw`self-start flex-row items-center my-7`}
+          hitSlop={10}
+        >
+          <Text style={tw`text-lg text-[#174C3C] mr-2`}>←</Text>
+          <Text style={tw`text-sm font-semibold text-[#174C3C]`}>Back</Text>
         </Pressable>
 
-        <View style={tw`mb-7`}>
-          <View
-            style={tw`w-14 h-14 rounded-2xl bg-[#DCE8D8] items-center justify-center mb-5`}
+        <View style={tw`mb-9`}>
+        
+          <Text
+            style={tw`text-[10px] font-bold uppercase tracking-[2px] text-[#9A7B45] mb-3`}
           >
-            <Text style={tw`text-[#174C3C] text-2xl font-bold`}>ز</Text>
-          </View>
-
-          <Text style={tw`text-3xl font-bold text-[#174C3C]`}>
-            Create your account
+            Begin your journey
           </Text>
 
-          <View style={tw`w-12 h-1 rounded-full bg-[#C59A55] mt-4 mb-4`} />
+          <Text
+            style={tw`font-display text-[37px] leading-[44px] text-[#174C3C]`}
+          >
+            Create your
+          </Text>
 
-          <Text style={tw`text-sm text-[#777D72] leading-6`}>
+          <Text
+            style={tw`font-display text-[37px] leading-[44px] italic text-[#174C3C]`}
+          >
+            account.
+          </Text>
+
+          <Text style={tw`text-sm leading-6 text-[#777D72] mt-4`}>
             A simpler way to calculate, organize, and manage your zakat.
           </Text>
         </View>
 
-        <View style={tw`bg-white rounded-[28px] p-5 border border-[#EAE8DF]`}>
+        <View>
           {fields.map((field) => {
             const isEmail = field.type === "email";
             const isName = field.type === "name";
@@ -151,18 +163,18 @@ export default function RegisterScreen() {
 
             return (
               <View key={field.type} style={tw`mb-5`}>
-                <Text style={tw`text-sm font-semibold text-[#24382D] mb-2`}>
+                <Text style={tw`text-xs font-bold text-[#24382D] mb-2`}>
                   {field.label}
                 </Text>
 
                 <View
-                  style={tw`flex-row items-center bg-[#F8F8F3] border border-[#E8E9DF] rounded-2xl px-4`}
+                  style={tw`flex-row items-center bg-white border border-[#E7E5DB] rounded-2xl px-4`}
                 >
                   <TextInput
                     value={field.value}
                     onChangeText={field.change}
                     placeholder={field.placeholder}
-                    placeholderTextColor="#9A9D93"
+                    placeholderTextColor="#A0A196"
                     secureTextEntry={secure}
                     keyboardType={isEmail ? "email-address" : "default"}
                     autoCapitalize={isEmail || !isName ? "none" : "words"}
@@ -176,7 +188,7 @@ export default function RegisterScreen() {
                             ? "new-password"
                             : "password"
                     }
-                    style={tw`flex-1 py-4 text-[#24382D]`}
+                    style={tw`flex-1 py-4 text-sm text-[#24382D]`}
                   />
 
                   {(isPassword || isConfirm) && (
@@ -187,8 +199,14 @@ export default function RegisterScreen() {
                           : setShowConfirmPassword(!showConfirmPassword)
                       }
                       hitSlop={10}
+                      accessibilityRole="button"
+                      accessibilityLabel={
+                        secure ? "Show password" : "Hide password"
+                      }
                     >
-                      <Text style={tw`text-[#174C3C] text-xs font-bold`}>
+                      <Text
+                        style={tw`text-[10px] font-bold tracking-wider text-[#648064]`}
+                      >
                         {secure ? "SHOW" : "HIDE"}
                       </Text>
                     </Pressable>
@@ -198,38 +216,50 @@ export default function RegisterScreen() {
             );
           })}
 
-          <View style={tw`bg-[#F1F4EC] rounded-xl px-4 py-3 mb-5`}>
-            <Text style={tw`text-xs text-[#536B54] leading-5`}>
-              Password must contain at least 8 characters.
+          <View style={tw`flex-row items-start mb-7 px-1`}>
+            <View style={tw`w-1 h-4 rounded-full bg-[#C59A55] mr-3 mt-0.5`} />
+            <Text style={tw`flex-1 text-xs leading-5 text-[#777D72]`}>
+              Choose a password with at least 8 characters to help protect your
+              account.
             </Text>
           </View>
 
           <Pressable
             onPress={handleRegister}
             style={({ pressed }) => [
-              tw`bg-[#174C3C] rounded-2xl py-4 items-center`,
-              pressed && { opacity: 0.8 },
+              tw`flex-row items-center justify-center bg-[#174C3C] rounded-2xl py-[17px] px-5`,
+              pressed && { opacity: 0.85, transform: [{ scale: 0.985 }] },
             ]}
           >
-            <Text style={tw`text-white font-bold text-base`}>
-              Create account →
+            <Text style={tw`text-sm font-bold text-white tracking-wide`}>
+              Create account
             </Text>
+            <Text style={tw`text-lg text-[#E4D0A5] ml-3`}>→</Text>
           </Pressable>
 
-          <View style={tw`flex-row justify-center flex-wrap mt-6`}>
-            <Text style={tw`text-[#777D72] text-sm`}>
+          <View style={tw`flex-row justify-center flex-wrap mt-7`}>
+            <Text style={tw`text-sm text-[#777D72]`}>
               Already have an account?{" "}
             </Text>
 
-            <Link href="/login" style={tw`text-[#174C3C] font-bold text-sm`}>
+            <Link
+              href="/(auth)/login"
+              style={tw`text-sm font-bold text-[#174C3C]`}
+            >
               Sign in
             </Link>
           </View>
         </View>
 
-        <Text style={tw`text-center text-xs text-[#92968C] mt-6 leading-5`}>
-          Start your journey to mindful giving.
-        </Text>
+        <View style={tw`flex-row items-center mt-10 mb-2`}>
+          <View style={tw`h-px flex-1 bg-[#E7E4D9]`} />
+          <Text
+            style={tw`text-[9px] uppercase tracking-[1.5px] text-[#999B90] mx-3`}
+          >
+            Mindful giving starts here
+          </Text>
+          <View style={tw`h-px flex-1 bg-[#E7E4D9]`} />
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );

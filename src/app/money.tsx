@@ -1,4 +1,3 @@
-
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -24,9 +23,7 @@ export default function Money() {
   const numericAmount = Number(amount);
 
   const isValidAmount =
-    amount.trim() !== "" &&
-    Number.isFinite(numericAmount) &&
-    numericAmount > 0;
+    amount.trim() !== "" && Number.isFinite(numericAmount) && numericAmount > 0;
 
   const zakatAmount = numericAmount * 0.025;
 
@@ -85,47 +82,55 @@ export default function Money() {
       style={tw`flex-1 bg-[#FAF9F5]`}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <View
-        style={tw`absolute -top-20 -right-20 w-72 h-72 rounded-full bg-[#174C3C]/5`}
-      />
-
       <ScrollView
-        contentContainerStyle={tw`px-6 pt-16 pb-12`}
+        contentContainerStyle={tw`px-6 pt-8 pb-12`}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
         <Pressable
           onPress={() => router.back()}
           style={({ pressed }) => [
-            tw`self-start mb-6 px-4 py-2.5 rounded-2xl bg-white border border-[#E5E2D8]`,
-            pressed && tw`opacity-80`,
+            tw`self-start flex-row items-center mb-9`,
+            pressed && tw`opacity-60`,
           ]}
         >
-          <Text style={tw`text-[#174C3C] font-bold text-sm`}>← Back</Text>
+          <Text style={tw`text-base text-[#174C3C] mr-2`}>←</Text>
+          <Text style={tw`text-sm font-semibold text-[#174C3C]`}>Back</Text>
         </Pressable>
 
-        <View style={tw`mb-7`}>
+        <View style={tw`flex-row items-center mb-4`}>
+          <View style={tw`w-1.5 h-1.5 rounded-full bg-[#C59A55] mr-2`} />
           <Text
-            style={tw`text-[11px] font-bold uppercase tracking-widest text-[#648064] mb-2`}
+            style={tw`text-xs font-bold uppercase tracking-widest text-[#648064]`}
           >
-            Zakat Calculator
-          </Text>
-
-          <Text style={tw`text-3xl font-bold text-[#1A2E26]`}>
-            Money & savings
-          </Text>
-
-          <Text style={tw`text-sm leading-6 text-[#6B7265] mt-2`}>
-            Calculate your estimate or save your asset for later. Saving is
-            optional.
+            Zakat calculator
           </Text>
         </View>
 
-        <View
-          style={tw`bg-white rounded-[32px] p-6 border border-[#EAE8DF]`}
+        <Text
+          style={[tw`text-4xl text-[#174C3C] mb-3`, { fontFamily: "Georgia" }]}
         >
-          <Text style={tw`text-xs font-bold uppercase tracking-wide text-[#5C6356] mb-2`}>
-            Asset name
+          Money & savings.
+        </Text>
+
+        <Text style={tw`text-sm leading-6 text-[#777D72] mb-8`}>
+          Estimate your zakat or save this asset to keep your finances
+          organized. Saving is always optional.
+        </Text>
+
+        <View style={tw`flex-row items-center mb-3`}>
+          <Text
+            style={tw`text-xs font-bold uppercase tracking-widest text-[#648064]`}
+          >
+            01
+          </Text>
+          <View style={tw`h-px flex-1 bg-[#E5E2D8] ml-3`} />
+          <Text style={tw`text-xs text-[#85897F] ml-3`}>Asset details</Text>
+        </View>
+
+        <View style={tw`bg-white rounded-3xl p-5 border border-[#EAE8DF]`}>
+          <Text style={tw`text-sm font-bold text-[#24382D] mb-3`}>
+            Give your asset a name
           </Text>
 
           <TextInput
@@ -133,14 +138,14 @@ export default function Money() {
             onChangeText={setName}
             placeholder="e.g. Emergency savings"
             placeholderTextColor="#A2A497"
-            style={tw`border border-[#E5E2D8] bg-[#FAF9F5] rounded-2xl px-5 py-4 text-base text-[#1A2E26] mb-6`}
+            style={tw`border border-[#E5E2D8] bg-[#FAF9F5] rounded-2xl px-4 py-4 text-base text-[#24382D] mb-6`}
           />
 
-          <Text style={tw`text-xs font-bold uppercase tracking-wide text-[#5C6356] mb-3`}>
+          <Text style={tw`text-sm font-bold text-[#24382D] mb-3`}>
             Currency
           </Text>
 
-          <View style={tw`flex-row gap-3 mb-6`}>
+          <View style={tw`flex-row bg-[#F7F5EF] rounded-xl p-1 mb-6`}>
             {(["EGP", "USD"] as const).map((item) => {
               const selected = currency === item;
 
@@ -152,16 +157,14 @@ export default function Money() {
                     setShowResult(false);
                   }}
                   style={[
-                    tw`flex-1 py-3.5 rounded-xl items-center border`,
-                    selected
-                      ? tw`bg-[#174C3C] border-[#174C3C]`
-                      : tw`bg-[#FAF9F5] border-[#E5E2D8]`,
+                    tw`flex-1 rounded-lg py-3 items-center`,
+                    selected && tw`bg-white`,
                   ]}
                 >
                   <Text
                     style={[
-                      tw`font-bold`,
-                      { color: selected ? "#FFFFFF" : "#5C6356" },
+                      tw`text-sm font-bold`,
+                      { color: selected ? "#174C3C" : "#85897F" },
                     ]}
                   >
                     {item}
@@ -171,45 +174,60 @@ export default function Money() {
             })}
           </View>
 
-          <Text style={tw`text-xs font-bold uppercase tracking-wide text-[#5C6356] mb-2.5`}>
-            Total amount ({currency})
+          <Text style={tw`text-sm font-bold text-[#24382D] mb-2`}>
+            Total amount
           </Text>
 
-          <TextInput
-            value={amount}
-            onChangeText={(value) => {
-              setAmount(value);
-              setShowResult(false);
-            }}
-            placeholder="e.g. 100000"
-            placeholderTextColor="#A2A497"
-            keyboardType="decimal-pad"
-            style={tw`border border-[#E5E2D8] bg-[#FAF9F5] rounded-2xl px-5 py-4 text-lg font-bold text-[#1A2E26]`}
-          />
-
-          <Text style={tw`text-xs leading-5 text-[#85897F] mt-3 mb-6`}>
-            Include relevant cash and savings. Consider debts due and other
-            applicable rules when assessing your zakatable wealth.
+          <Text style={tw`text-xs text-[#85897F] mb-3`}>
+            Enter your total money and savings in {currency}.
           </Text>
+
+          <View
+            style={tw`flex-row items-center border border-[#E5E2D8] bg-[#FAF9F5] rounded-2xl px-4`}
+          >
+            <Text style={tw`text-sm font-bold text-[#A77A35] mr-3`}>
+              {currency}
+            </Text>
+            <TextInput
+              value={amount}
+              onChangeText={(value) => {
+                setAmount(value);
+                setShowResult(false);
+              }}
+              placeholder="e.g. 100000"
+              placeholderTextColor="#A2A497"
+              keyboardType="decimal-pad"
+              style={tw`flex-1 py-4 text-lg font-bold text-[#24382D]`}
+            />
+          </View>
+
+          <View style={tw`flex-row mt-4 mb-7`}>
+            <View style={tw`w-1 rounded-full bg-[#C59A55] mr-3`} />
+            <Text style={tw`flex-1 text-xs leading-5 text-[#85897F]`}>
+              Include relevant cash and savings. Consider debts due and other
+              applicable rules when assessing your zakatable wealth.
+            </Text>
+          </View>
 
           <Pressable
             onPress={calculateZakat}
             style={({ pressed }) => [
-              tw`rounded-2xl bg-[#174C3C] py-4 items-center`,
-              pressed && tw`opacity-90`,
+              tw`rounded-2xl bg-[#174C3C] py-4 flex-row items-center justify-center`,
+              pressed && tw`opacity-80`,
             ]}
           >
-            <Text style={tw`text-white font-bold text-base`}>
+            <Text style={tw`text-white font-bold text-base mr-2`}>
               Calculate estimate
             </Text>
+            <Text style={tw`text-[#E4D0A5] text-lg`}>→</Text>
           </Pressable>
 
           <Pressable
             onPress={saveAsset}
             disabled={saving}
             style={({ pressed }) => [
-              tw`rounded-2xl border border-[#174C3C] py-4 items-center mt-3`,
-              pressed && tw`opacity-80`,
+              tw`rounded-2xl border border-[#174C3C]/25 py-4 items-center mt-3`,
+              pressed && tw`opacity-70`,
               saving && tw`opacity-50`,
             ]}
           >
@@ -220,28 +238,50 @@ export default function Money() {
         </View>
 
         {showResult && (
-          <View style={tw`mt-6 bg-[#E8EDE2] rounded-[28px] p-6 border border-[#DCE5D5]`}>
-            <Text style={tw`text-xs font-bold text-[#3F5A3B] uppercase`}>
+          <View
+            style={tw`mt-6 bg-[#E8EEE5] rounded-3xl p-6 border border-[#DCE5D5]`}
+          >
+            <View style={tw`flex-row items-center mb-5`}>
+              <View style={tw`w-1.5 h-1.5 rounded-full bg-[#C59A55] mr-2`} />
+              <Text
+                style={tw`text-xs font-bold uppercase tracking-widest text-[#52744D]`}
+              >
+                Your estimate
+              </Text>
+            </View>
+
+            <Text style={tw`text-sm text-[#52744D]`}>
               Preliminary 2.5% estimate
             </Text>
 
-            <Text style={tw`text-3xl font-bold text-[#174C3C] mt-3`}>
+            <Text
+              style={[
+                tw`text-3xl text-[#174C3C] mt-3`,
+                { fontFamily: "Georgia", fontWeight: "bold" },
+              ]}
+            >
               {zakatAmount.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}{" "}
-              <Text style={tw`text-lg font-semibold text-[#52744D]`}>
+              <Text style={tw`text-base font-semibold text-[#52744D]`}>
                 {currency}
               </Text>
             </Text>
 
-            <Text style={tw`text-xs leading-5 text-[#52684F] mt-4`}>
+            <View style={tw`h-px bg-[#174C3C]/10 my-5`} />
+
+            <Text style={tw`text-xs leading-5 text-[#52684F]`}>
               This is a mathematical estimate only. It does not confirm that
               zakat is due. Nisab, the applicable lunar-year requirement, and
               your circumstances must be assessed separately.
             </Text>
           </View>
         )}
+
+        <Text style={tw`text-xs text-center leading-5 text-[#85897F] mt-7`}>
+          Mindful giving starts with clarity.
+        </Text>
       </ScrollView>
     </KeyboardAvoidingView>
   );

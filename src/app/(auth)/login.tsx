@@ -26,128 +26,155 @@ export default function Login() {
     try {
       await signIn(email, password);
     } catch (error) {
-      const message =  error instanceof Error ? error.message : "Something went wrong. Please try again.";
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again.";
       Alert.alert("Sign in failed", message);
     }
-
   }
 
   return (
     <KeyboardAvoidingView
-      style={tw`flex-1 bg-[#F7F5EF]`}
+      style={tw`flex-1 bg-[#FAF9F5]`}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScrollView
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={tw`flex-grow justify-center px-6 py-8`}
+        contentContainerStyle={tw`flex-grow px-6 pt-6 pb-8`}
       >
-        <Pressable onPress={() => router.back()} style={tw`self-start mb-9`}>
-          <Text style={tw`text-[#174C3C] font-semibold text-base`}>← Back</Text>
+        <Pressable
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          style={tw`self-start flex-row items-center my-7`}
+          hitSlop={10}
+        >
+          <Text style={tw`text-lg text-[#174C3C] mr-2`}>←</Text>
+          <Text style={tw`text-sm font-semibold text-[#174C3C]`}>Back</Text>
         </Pressable>
 
-        <View style={tw`mb-8`}>
-          <View
-            style={tw`w-14 h-14 rounded-2xl bg-[#DCE8D8] items-center justify-center mb-6`}
+        <View style={tw`mb-9`}>
+          
+          <Text
+            style={tw`text-[10px] font-bold uppercase tracking-[2px] text-[#9A7B45] mb-3`}
           >
-            <Text style={tw`text-[#174C3C] text-2xl font-bold`}>ز</Text>
-          </View>
-
-          <Text style={tw`text-3xl font-bold text-[#174C3C]`}>
             Welcome back
           </Text>
 
-          <View style={tw`w-12 h-1 rounded-full bg-[#C59A55] mt-4 mb-4`} />
+          <Text
+            style={tw`font-display text-[38px] leading-[45px] text-[#174C3C]`}
+          >
+            Good to see
+          </Text>
 
-          <Text style={tw`text-sm text-[#777D72] leading-6`}>
+          <Text
+            style={tw`font-display text-[38px] leading-[45px] italic text-[#174C3C]`}
+          >
+            you again.
+          </Text>
+
+          <Text style={tw`text-sm leading-6 text-[#777D72] mt-4`}>
             Sign in to manage your assets and continue your zakat journey.
           </Text>
         </View>
 
-        <View style={tw`bg-white rounded-[28px] p-5 border border-[#EAE8DF]`}>
-          <Text style={tw`text-sm font-semibold text-[#24382D] mb-2`}>
+        <View>
+          <Text style={tw`text-xs font-bold text-[#24382D] mb-2`}>
             Email address
           </Text>
 
-          <TextInput
-            value={email}
-            onChangeText={setEmail}
-            placeholder="you@example.com"
-            placeholderTextColor="#9A9D93"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-            autoComplete="email"
-            style={tw`bg-[#F8F8F3] border border-[#E8E9DF] rounded-2xl px-4 py-4 mb-5 text-[#24382D]`}
-          />
+          <View
+            style={tw`flex-row items-center bg-white border border-[#E7E5DB] rounded-2xl px-4 mb-5`}
+          >
+            <Text style={tw`text-[#9A7B45] text-base mr-3`}>@</Text>
 
-          <Text style={tw`text-sm font-semibold text-[#24382D] mb-2`}>
-            Password
-          </Text>
+            <TextInput
+              value={email}
+              onChangeText={setEmail}
+              placeholder="you@example.com"
+              placeholderTextColor="#A0A196"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoComplete="email"
+              style={tw`flex-1 py-4 text-sm text-[#24382D]`}
+            />
+          </View>
+
+          <View style={tw`flex-row items-center justify-between mb-2`}>
+            <Text style={tw`text-xs font-bold text-[#24382D]`}>Password</Text>
+          </View>
 
           <View
-            style={tw`flex-row items-center bg-[#F8F8F3] border border-[#E8E9DF] rounded-2xl px-4`}
+            style={tw`flex-row items-center bg-white border border-[#E7E5DB] rounded-2xl px-4`}
           >
+            <Text style={tw`text-[#9A7B45] text-base mr-3`}>⌑</Text>
+
             <TextInput
               value={password}
               onChangeText={setPassword}
               placeholder="Enter your password"
-              placeholderTextColor="#9A9D93"
+              placeholderTextColor="#A0A196"
               secureTextEntry={!showPassword}
               autoCapitalize="none"
               autoComplete="current-password"
-              style={tw`flex-1 py-4 text-[#24382D]`}
+              style={tw`flex-1 py-4 text-sm text-[#24382D]`}
             />
 
             <Pressable
               onPress={() => setShowPassword(!showPassword)}
               hitSlop={10}
+              accessibilityRole="button"
+              accessibilityLabel={
+                showPassword ? "Hide password" : "Show password"
+              }
             >
-              <Text style={tw`text-[#174C3C] text-xs font-bold`}>
+              <Text
+                style={tw`text-[10px] font-bold tracking-wider text-[#648064]`}
+              >
                 {showPassword ? "HIDE" : "SHOW"}
               </Text>
             </Pressable>
           </View>
 
           <Pressable
-            onPress={() =>
-              Alert.alert(
-                "Coming soon",
-                "Password recovery will be added with authentication.",
-              )
-            }
-            style={tw`self-end mt-4 mb-7`}
-          >
-            <Text style={tw`text-[#174C3C] font-semibold text-sm`}>
-              Forgot password?
-            </Text>
-          </Pressable>
-
-          <Pressable
             onPress={handleLogin}
+            accessibilityRole="button"
             style={({ pressed }) => [
-              tw`bg-[#174C3C] rounded-2xl py-4 items-center`,
-              pressed && { opacity: 0.8 },
+              tw`flex-row items-center justify-center bg-[#174C3C] rounded-2xl py-[17px] px-5 my-2`,
+              pressed && { opacity: 0.85, transform: [{ scale: 0.985 }] },
             ]}
           >
-            <Text style={tw`text-white font-bold text-base`}>Sign in →</Text>
+            <Text style={tw`text-sm font-bold text-white tracking-wide`}>
+              Sign in
+            </Text>
+            <Text style={tw`text-lg text-[#E4D0A5] ml-3`}>→</Text>
           </Pressable>
 
-          <View style={tw`flex-row justify-center flex-wrap mt-6`}>
-            <Text style={tw`text-[#777D72] text-sm`}>New to ZakatApp? </Text>
+          <View style={tw`flex-row justify-center flex-wrap mt-7`}>
+            <Text style={tw`text-sm text-[#777D72]`}>New to Zakat? </Text>
 
             <Link
               href="/(auth)/register"
-              style={tw`text-[#174C3C] font-bold text-sm`}
+              style={tw`text-sm font-bold text-[#174C3C]`}
             >
               Create an account
             </Link>
           </View>
         </View>
 
-        <Text style={tw`text-center text-xs text-[#92968C] mt-7`}>
-          Your journey to mindful giving starts here.
-        </Text>
+        <View style={tw`flex-row items-center mt-10 mb-2`}>
+          <View style={tw`h-px flex-1 bg-[#E7E4D9]`} />
+
+          <Text
+            style={tw`text-[9px] uppercase tracking-[1.5px] text-[#999B90] mx-3`}
+          >
+            Mindful giving starts here
+          </Text>
+
+          <View style={tw`h-px flex-1 bg-[#E7E4D9]`} />
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
