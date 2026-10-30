@@ -1,18 +1,29 @@
+
 import LogoutButton from "@/components/auth/LogoutButton";
-import { zakatOptions } from "@/constants/home";
+import PriceCard from "@/components/ui/PriceCard";
 import { useAuth } from "@/context/AuthContext";
-import { router } from "expo-router";
-import { Pressable, ScrollView, Text, View } from "react-native";
-import tw from "twrnc";
+import { formatCurrency, formatDate } from "@/lib/helpers";
+import { getZakatInfo, getZakatPrices } from "@/services-2/zakat";
+import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { useFocusEffect } from "expo-router";
-import { getSavedAssets, type SavedAsset } from "@/services/assets";
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
+import tw from "twrnc";
+
+type ZakatInfo = Awaited<ReturnType<typeof getZakatInfo>>;
+type ZakatPrices = Awaited<ReturnType<typeof getZakatPrices>>;
+
 
 export default function HomeScreen() {
-  const [assets, setAssets] = useState<SavedAsset[]>([]);
-  const [assetsLoading, setAssetsLoading] = useState(true);
-  const [assetsError, setAssetsError] = useState(false);
   const { user } = useAuth();
+  const [prices, setPrices] = useState<ZakatPrices | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   const fullName =
     typeof user?.user_metadata?.fullName === "string"
@@ -21,245 +32,201 @@ export default function HomeScreen() {
 
   const firstName = fullName ? fullName.split(/\s+/)[0] : "there";
 
-  const loadAssets = useCallback(async () => {
-    setAssetsLoading(true);
-    setAssetsError(false);
+  const loadHomeData = useCallback(async () => {
+    setLoading(true);
+    setError(false);
 
     try {
-      const savedAssets = await getSavedAssets();
-      setAssets(savedAssets);
-    } catch (error) {
-      console.error("Failed to load home assets:", error);
-      setAssetsError(true);
+     const pricesData = await getZakatPrices();
+
+      setPrices(pricesData);
+    } catch (err) {
+      console.error("Failed to load zakat home data:", err);
+      setError(true);
     } finally {
-      setAssetsLoading(false);
+      setLoading(false);
     }
   }, []);
 
   useFocusEffect(
     useCallback(() => {
-      void loadAssets();
-    }, [loadAssets]),
+      void loadHomeData();
+    }, [loadHomeData]),
   );
 
-  const assetTotals = assets.reduce<Record<string, number>>((totals, asset) => {
-    const value =
-      asset.asset_type === "money"
-        ? (asset.amount ?? 0)
-        : (asset.weight_grams ?? 0) * (asset.price_per_gram ?? 0);
 
-    totals[asset.currency] = (totals[asset.currency] ?? 0) + value;
+return (
+  <View style={tw`flex-1 bg-[#FAF9F5]`}>
+    <ScrollView
+      contentContainerStyle={tw`px-5 pt-8 pb-10`}
+      showsVerticalScrollIndicator={false}
+    >
+      <View style={tw`my-8`}>
+        <Text style={tw`text-[11px] font-bold uppercase tracking-widest text-[#A77A35] mb-3`}>
+          Your personal zakat space
+        </Text>
 
-    return totals;
-  }, {});
+        <Text style={tw`text-2xl font-bold text-[#174C3C]`}>
+          Assalamu Alaikum,{firstName}
+        </Text>
 
-  return (
-    <View style={tw`flex-1 bg-[#FAF9F5]`}>
-      <ScrollView
-        style={tw`flex-1`}
-        contentContainerStyle={tw`px-6 pt-12 pb-10`}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={tw`flex-row items-center justify-between my-6`}>
-          <View style={tw`flex-1 mr-4`}>
-            <Text
-              style={tw`text-[10px] font-bold uppercase tracking-[2px] text-[#9A7B45] mb-2`}
-            >
-              Your personal zakat space
-            </Text>
+        <Text style={tw`text-sm text-[#777D72] mt-1`}>
+          Stay updated with current market prices.
+        </Text>
+      </View>
 
-            <Text
-              style={tw`font-display text-[25px] leading-8 font-bold text-[#174C3C]`}
-            >
-              Assalamu Alaikum,
-            </Text>
-
-            <Text
-              style={tw`font-display text-[25px] leading-8 italic text-[#174C3C]`}
-            >
-              {firstName}
-            </Text>
-
-            <Text style={tw`text-sm text-[#777D72] mt-2`}>
-              Let's organize your giving.
-            </Text>
-          </View>
+      {loading ? (
+        <View style={tw`py-20 items-center`}>
+          <ActivityIndicator size="large" color="#174C3C" />
+          <Text style={tw`text-sm text-[#777D72] mt-3`}>
+            Loading market prices...
+          </Text>
         </View>
+      ) : error || !prices ? (
+        <View style={tw`bg-white rounded-3xl p-5 border border-[#EAE8DF]`}>
+          <Text style={tw`text-base font-bold text-[#174C3C]`}>
+            Unable to load prices
+          </Text>
 
-        <View style={tw`bg-[#174C3C] rounded-[26px] p-5 mb-5 overflow-hidden`}>
-          <View style={tw`flex-row items-center justify-between`}>
-            <Text
-              style={tw`text-[10px] font-bold uppercase tracking-[2px] text-[#DCE5D5]`}
-            >
-              Financial overview
+          <Pressable onPress={() => void loadHomeData()}>
+            <Text style={tw`text-sm font-bold text-[#A77A35] mt-3`}>
+              Try again →
             </Text>
-
-            <View style={tw`w-2 h-2 rounded-full bg-[#D9BD83]`} />
-          </View>
-
-          {assetsLoading ? (
-            <Text style={tw`text-white text-lg font-semibold mt-5`}>
-              Loading assets...
-            </Text>
-          ) : assetsError ? (
-            <>
-              <Text style={tw`text-white text-lg font-semibold mt-5`}>
-                Unable to load assets
+          </Pressable>
+        </View>
+      ) : (
+        <>
+          <View style={tw`bg-[#174C3C] rounded-3xl p-5 mb-5`}>
+            <View style={tw`flex-row justify-between items-center mb-5`}>
+              <Text style={tw`text-[11px] font-bold uppercase tracking-widest text-[#DCE5D5]`}>
+                Market Overview
               </Text>
 
-              <Pressable onPress={() => void loadAssets()}>
-                <Text style={tw`text-[#E4D0A5] text-xs mt-2 underline`}>
-                  Try again
+              <View style={tw`bg-white/15 rounded-full px-3 py-1.5`}>
+                <Text style={tw`text-xs font-bold text-white`}>
+                  {prices.currency}
                 </Text>
-              </Pressable>
-            </>
-          ) : assets.length === 0 ? (
-            <>
-              <Text style={tw`font-display text-3xl text-white mt-5`}>
-                Start with one.
-              </Text>
+              </View>
+            </View>
 
-              <Text style={tw`text-xs leading-5 text-[#DCE5D5] mt-2`}>
-                Add your money or gold to begin organizing your assets.
-              </Text>
-            </>
-          ) : (
-            <>
-              <View style={tw`flex-row items-baseline mt-5`}>
-                <Text style={tw`font-display text-4xl text-white`}>
-                  {assets.length.toString().padStart(2, "0")}
+            <View style={tw`flex-row gap-3`}>
+              <View style={tw`flex-1 bg-[#FAF9F5] rounded-2xl p-4`}>
+                <Text style={tw`text-xs text-[#85897F] mb-2`}>
+                  Gold / 24K
                 </Text>
 
-                <Text style={tw`text-sm text-[#DCE5D5] ml-3`}>
-                  {assets.length === 1 ? "saved asset" : "saved assets"}
+                <Text style={tw`text-base font-bold text-[#174C3C]`}>
+                  {formatCurrency(prices.gold_price_per_gram, prices.currency)}
                 </Text>
               </View>
 
-              <Text style={tw`text-xs leading-5 text-[#DCE5D5] mt-2`}>
-                Your saved financial assets, all in one place.
-              </Text>
-            </>
-          )}
+              <View style={tw`flex-1 bg-[#FAF9F5] rounded-2xl p-4`}>
+                <Text style={tw`text-xs text-[#85897F] mb-2`}>
+                  Silver / gram
+                </Text>
 
-          <View style={tw`h-px bg-white/20 my-5`} />
+                <Text style={tw`text-base font-bold text-[#174C3C]`}>
+                  {formatCurrency(prices.silver_price_per_gram, prices.currency)}
+                </Text>
+              </View>
+            </View>
+
+            <Text style={tw`text-[11px] text-[#DCE5D5] mt-4`}>
+              Updated: {formatDate(prices.as_of)}
+            </Text>
+
+            {prices.is_fallback && (
+              <Text style={tw`text-xs text-[#D9BD83] mt-2`}>
+                Currently showing fallback prices.
+              </Text>
+            )}
+
+            <Text style={tw`text-[11px] leading-5 text-[#DCE5D5] mt-2`}>
+              {prices.note}
+            </Text>
+          </View>
+
+          <View style={tw`bg-white rounded-3xl p-5 mb-5 border border-[#E9E6DC]`}>
+            <Text style={tw`text-xl font-bold text-[#174C3C] mb-5`}>
+              Nisab Threshold
+            </Text>
+
+            <View style={tw`mb-4`}>
+              <Text style={tw`text-xs text-[#85897F]`}>
+                Gold ({prices.nisab_gold_grams}g)
+              </Text>
+
+              <Text style={tw`text-lg font-bold text-[#174C3C] mt-2`}>
+                {formatCurrency(prices.nisab_gold_value, prices.currency)}
+              </Text>
+            </View>
+
+            <View style={tw`h-px bg-[#E9E6DC] mb-4`} />
+
+            <View>
+              <Text style={tw`text-xs text-[#85897F]`}>
+                Silver ({prices.nisab_silver_grams}g)
+              </Text>
+
+              <Text style={tw`text-lg font-bold text-[#174C3C] mt-2`}>
+                {formatCurrency(prices.nisab_silver_value, prices.currency)}
+              </Text>
+            </View>
+
+            <Text style={tw`text-xs leading-5 text-[#85897F] mt-4`}>
+              Nisab values are calculated using current market prices.
+            </Text>
+          </View>
 
           <Pressable
-            onPress={() => router.push("/assets")}
-            accessibilityRole="button"
+            onPress={() => router.push("/zakat-guide")}
             style={({ pressed }) => [
-              tw`flex-row items-center justify-between bg-[#FAF9F5] rounded-xl px-4 py-3.5`,
+              tw`bg-[#E8EEE5] rounded-2xl p-5 mb-4 flex-row items-center justify-between`,
+              pressed && { opacity: 0.8 },
+            ]}
+          >
+            <View style={tw`flex-1 mr-3`}>
+              <Text style={tw`text-base font-bold text-[#174C3C]`}>
+                Zakat Guide
+              </Text>
+
+              <Text style={tw`text-sm leading-5 text-[#6B7867] mt-1`}>
+                Understand zakat rules and conditions.
+              </Text>
+            </View>
+
+            <Text style={tw`text-xl text-[#174C3C]`}>→</Text>
+          </Pressable>
+
+          <Pressable
+            onPress={() => router.push("/zakat-guide")}
+            style={({ pressed }) => [
+              tw`bg-[#174C3C] rounded-2xl p-5 mb-8 flex-row items-center justify-between`,
               pressed && { opacity: 0.85 },
             ]}
           >
-            <Text style={tw`text-sm font-bold text-[#174C3C]`}>
-              Manage saved assets
-            </Text>
+            <View style={tw`flex-1 mr-3`}>
+              <Text style={tw`text-base font-bold text-white`}>
+                Calculate Your Zakat
+              </Text>
 
-            <Text style={tw`text-lg text-[#174C3C]`}>→</Text>
+              <Text style={tw`text-sm text-[#DCE5D5] mt-2`}>
+                Start with the Zakat Guide.
+              </Text>
+            </View>
+
+            <Text style={tw`text-2xl text-[#D9BD83]`}>→</Text>
           </Pressable>
-        </View>
+        </>
+      )}
 
-        <Pressable
-          onPress={() => router.push("/quick-calculation")}
-          accessibilityRole="button"
-          style={({ pressed }) => [
-            tw`flex-row items-center py-4 px-4 mb-8 rounded-2xl border border-[#DCE5D5] bg-[#F0F4ED]`,
-            pressed && { opacity: 0.8 },
-          ]}
-        >
-          <View
-            style={tw`w-10 h-10 rounded-xl bg-white items-center justify-center mr-3`}
-          >
-            <Text style={tw`text-lg text-[#174C3C]`}>↗</Text>
-          </View>
-
-          <View style={tw`flex-1 mr-3`}>
-            <Text style={tw`text-sm font-bold text-[#174C3C]`}>
-              Quick calculation
-            </Text>
-
-            <Text style={tw`text-xs leading-5 text-[#6B7867] mt-1`}>
-              Calculate without saving your assets.
-            </Text>
-          </View>
-
-          <Text style={tw`text-lg text-[#174C3C]`}>→</Text>
-        </Pressable>
-
-        <View style={tw`mb-4`}>
-          <Text style={tw`font-display text-[25px] text-[#174C3C]`}>
-            Calculate zakat
-          </Text>
-
-          <Text style={tw`text-xs text-[#85897F] mt-2`}>
-            Choose what you'd like to calculate.
-          </Text>
-        </View>
-
-        <View>
-          {zakatOptions?.map((item: any) => {
-            const IconComponent = item.icon;
-
-            return (
-              <Pressable
-                key={item.title}
-                onPress={() => router.push(item.route as never)}
-                accessibilityRole="button"
-                accessibilityLabel={`Calculate ${item.title}`}
-                style={({ pressed }) => [
-                  tw`flex-row items-center py-4 border-b border-[#E9E6DC]`,
-                  pressed && { opacity: 0.65 },
-                ]}
-              >
-                <View
-                  style={[
-                    tw`w-11 h-11 rounded-xl items-center justify-center mr-4`,
-                    { backgroundColor: item.bg },
-                  ]}
-                >
-                  <IconComponent
-                    size={21}
-                    color={item.accent}
-                    strokeWidth={1.8}
-                  />
-                </View>
-
-                <View style={tw`flex-1 mr-3`}>
-                  <Text style={tw`text-sm font-bold text-[#24382D]`}>
-                    {item.title}
-                  </Text>
-
-                  <Text style={tw`text-xs leading-5 text-[#85897F] mt-1`}>
-                    {item.subtitle}
-                  </Text>
-                </View>
-
-                <Text style={tw`text-lg text-[#9A7B45]`}>→</Text>
-              </Pressable>
-            );
-          })}
-        </View>
-
-        <View style={tw`mt-8 mb-6`}>
-          <View style={tw`flex-row items-center mb-3`}>
-            <View style={tw`w-1 h-4 rounded-full bg-[#C59A55] mr-2`} />
-
-            <Text
-              style={tw`text-[10px] font-bold uppercase tracking-[2px] text-[#648064]`}
-            >
-              A gentle reminder
-            </Text>
-          </View>
-
-          <Text style={tw`text-xs leading-6 text-[#777D72]`}>
-            Your zakat calculation depends on the applicable rules, nisab
-            threshold, and the information you provide. Review your
-            circumstances before making a payment.
-          </Text>
-        </View>
-
+      <View style={tw`pt-5 border-t border-[#E5E2D8]`}>
         <LogoutButton />
-      </ScrollView>
-    </View>
-  );
+      </View>
+    </ScrollView>
+  </View>
+);
+
+
+
 }
