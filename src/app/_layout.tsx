@@ -1,8 +1,9 @@
-
-import { ActivityIndicator, View } from "react-native";
-import { Stack } from "expo-router";
-import tw from "twrnc";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { Stack } from "expo-router";
+import { ActivityIndicator, View } from "react-native";
+import tw from "twrnc";
+import "../localization/i18n";
+
 
 function RootNavigator() {
   const { session, loading } = useAuth();

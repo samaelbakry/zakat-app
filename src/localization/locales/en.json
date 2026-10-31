@@ -1,0 +1,132 @@
+{
+  "home": {
+    "greeting": "Assalamu Alaikum,",
+    "personalSpace": "Your personal zakat space",
+    "welcome": "Stay updated with current market prices.",
+    "language": "Language",
+    "loading": "Loading market prices...",
+    "market": {
+      "title": "Market Overview",
+      "subtitle": "Current precious metal prices",
+      "gold": "Gold / 24K",
+      "silver": "Silver",
+      "perGram": "Per gram",
+      "updated": "Updated:",
+      "fallback": "Currently showing fallback prices."
+    },
+    "error": {
+      "title": "Unable to load prices",
+      "description": "We couldn't retrieve the latest market information.",
+      "retry": "Try again"
+    },
+    "essentials": "Zakat essentials",
+    "nisab": {
+      "title": "Nisab Threshold",
+      "description": "Minimum wealth required for zakat.",
+      "gold": "Gold",
+      "silver": "Silver",
+      "note": "Nisab values are calculated using current market prices."
+    },
+    "guide": {
+      "title": "Zakat Guide",
+      "description": "Understand zakat rules and conditions."
+    },
+    "calculator": {
+      "title": "Calculate Your Zakat",
+      "description": "Calculate your zakatable wealth."
+    }
+  },
+
+  "guideContent": {
+    "definition": "Zakat is the third pillar of Islam — an obligatory annual payment of 2.5% on qualifying wealth held above the nisab threshold for one lunar year.",
+    "nisab": {
+      "gold": "Nisab based on 85 grams of pure gold (scholarly consensus).",
+      "silver": "Nisab based on 595 grams of pure silver. Many scholars prefer this as it benefits more people.",
+      "note": "The silver nisab is typically lower in monetary value, meaning more Muslims are required to pay. Scholars differ on which to use; consult a local scholar."
+    },
+    "rate": {
+      "general": "2.5% (1/40) on cash, gold, silver, stocks, trade goods, and other investments",
+      "agricultureRain": "10% (Ushr) on crops irrigated by rain or natural water",
+      "agricultureIrrigated": "5% on crops requiring artificial irrigation"
+    },
+    "conditions": [
+      "Muslim (Zakat is only obligatory on Muslims)",
+      "Sane and adult (Baligh)",
+      "Free person (not enslaved)",
+      "Owns wealth above the nisab threshold",
+      "Wealth held for one full lunar year (hawl) — agricultural produce is exempt from hawl"
+    ],
+    "recipients": [
+      "The poor (Fuqara)",
+      "The destitute (Masakeen)",
+      "Zakat administrators",
+      "Those whose hearts are to be reconciled (new Muslims, etc.)",
+      "Those in bondage or slavery",
+      "Those in debt (Gharimeen)",
+      "Those striving in the way of Allah (Fi Sabilillah)",
+      "The stranded traveler (Ibn al-Sabil)"
+    ],
+    "zakatableAssets": [
+      "Cash and bank savings",
+      "Gold and silver (bullion, jewelry not in daily use)",
+      "Stocks and shares (calculate based on zakatable portion)",
+      "Business inventory and trade goods",
+      "Agricultural produce (at harvest)",
+      "Livestock (specific nisab and rates apply)",
+      "Rental income and investment returns"
+    ],
+    "nonZakatableAssets": [
+      "Primary home",
+      "Personal vehicle",
+      "Household furniture and personal items",
+      "Tools and equipment used in work",
+      "Gold and silver jewelry worn daily (scholars differ on this)"
+    ],
+    "hawl": "The hawl is the lunar year. Zakat becomes due once the nisab has been held for a complete lunar year (approximately 354 days). If wealth drops below nisab during the year and rises again, the year resets.",
+    "disclaimer": "This calculator provides an estimate based on common scholarly positions. For personal religious rulings, consult a qualified Islamic scholar (Mufti) in your region.",
+    "source": "Based on principles from the four major Sunni schools of law (Hanafi, Maliki, Shafi'i, Hanbali)."
+  },
+  "guide": {
+    "backHome": "Back to Home",
+    "eyebrow": "Knowledge & Guidance",
+    "title": "Zakat Guide",
+    "subtitle": "A clear guide to understanding Zakat, its conditions, and how it applies to your wealth.",
+    "loading": "Preparing your guide...",
+    "error": {
+      "title": "Unable to load the guide",
+      "description": "Something went wrong while retrieving the information. Please try again.",
+      "retry": "Try again"
+    },
+    "introduction": "Introduction",
+    "whatIsZakat": "What is Zakat?",
+    "conditions": "Conditions of Zakat",
+    "importantConcept": "Important concept",
+    "hawl": "Hawl – Lunar Year",
+    "zakatableAssets": "Zakatable Assets",
+    "zakatableDescription": "Types of wealth subject to Zakat:",
+    "nonZakatableAssets": "Non-Zakatable Assets",
+    "nonZakatableDescription": "Assets generally not subject to Zakat:",
+    "rates": {
+      "title": "Zakat Rates",
+      "general": "General wealth",
+      "rainIrrigated": "Rain-irrigated crops",
+      "artificiallyIrrigated": "Artificially irrigated crops"
+    },
+    "recipients": "Who Can Receive Zakat?",
+    "nisab": {
+      "title": "Nisab",
+      "description": "Minimum threshold of wealth",
+      "goldStandard": "GOLD STANDARD",
+      "silverStandard": "SILVER STANDARD",
+      "grams": "grams"
+    },
+    "disclaimer": {
+      "title": "Important Disclaimer",
+      "source": "Source"
+    },
+    "calculator": {
+      "title": "Continue to Calculator",
+      "description": "Apply what you've learned."
+    }
+  }
+}

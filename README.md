@@ -22,7 +22,6 @@ Calculation history, saved assets, and the additional money, gold, and Zakat Al-
 
 ## Tech Stack
 
-| --- | --- |
 | Language | TypeScript, with TSX for React Native screens |
 | App framework | Expo SDK 58, React 19, React Native 0.88 |
 | Navigation | Expo Router with file-based routes and a protected root stack |

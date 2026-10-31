@@ -3,9 +3,12 @@ import { ActivityIndicator, Alert, Pressable, Text } from "react-native";
 
 import { useState } from "react";
 import tw from "twrnc";
+import i18n from "@/localization/i18n";
 
 export default function LogoutButton() {
   const [signingOut, setSigningOut] = useState(false);
+  const isArabic = i18n.language.startsWith("ar");
+
   async function handleSignOut() {
     if (signingOut) return;
 
@@ -36,7 +39,7 @@ export default function LogoutButton() {
       {signingOut ? (
         <ActivityIndicator color="#648064" />
       ) : (
-        <Text style={tw`text-[#777D72] font-semibold`}>Sign out</Text>
+        <Text style={tw`text-[#777D72] font-semibold`}>{isArabic ? "تسجيل خروج" :"Sign out"}</Text>
       )}
     </Pressable>
   );

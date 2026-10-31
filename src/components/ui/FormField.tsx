@@ -9,6 +9,7 @@ export default function FormField({
   value,
   onChangeText,
   currency,
+  
 }: {
   label: string;
   hint: string;
