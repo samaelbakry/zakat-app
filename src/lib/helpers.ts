@@ -12,4 +12,12 @@ export const formatDate = (date: string) =>
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-  })
+    hour12:true
+  });
+
+export const formatMoney = (value: number, currency: string) =>
+  new Intl.NumberFormat("en-EG", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 2,
+  }).format(value);

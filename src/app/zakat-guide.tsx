@@ -1,5 +1,5 @@
 import GuideSection from "@/components/ui/GuideSections";
-import { getZakatInfo } from "@/services-2/zakat";
+import { getZakatInfo } from "@/services/zakat";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import {
@@ -205,7 +205,7 @@ export default function ZakatGuideScreen() {
             </View>
 
             <Pressable
-              onPress={() => router.push("/zakat-calculator" as never)}
+              onPress={() => router.push("/zakat-calculation")}
               style={({ pressed }) => [
                 tw`bg-[#174C3C] rounded-2xl p-5 flex-row items-center justify-between`,
                 pressed && { opacity: 0.85 },
@@ -223,7 +223,6 @@ export default function ZakatGuideScreen() {
 
               <Text style={tw`text-2xl text-[#D9BD83]`}>→</Text>
             </Pressable>
-           
           </>
         )}
       </ScrollView>
