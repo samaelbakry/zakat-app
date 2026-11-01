@@ -1,14 +1,8 @@
-
 import GuideSection from "@/components/ui/GuideSections";
 import { getZakatInfo } from "@/services/zakat";
 import { translateGuideContent } from "@/localization/translateGuideContent";
 import { router, useFocusEffect } from "expo-router";
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -86,7 +80,7 @@ export default function ZakatGuideScreen() {
 
   const titleStyle: TextStyle = {
     writingDirection: isArabic ? "rtl" : "ltr",
-    textAlign: "right",
+    textAlign: isArabic ? "right" : "left",
     width: "100%",
     letterSpacing: isArabic ? 0 : undefined,
   };
@@ -163,12 +157,7 @@ export default function ZakatGuideScreen() {
           </View>
 
           <View style={tw`mb-8`}>
-            <View
-              style={tw.style(
-                "flex-row items-center mb-3",
-                rowDirection,
-              )}
-            >
+            <View style={tw.style("flex-row items-center mb-3", rowDirection)}>
               <View
                 style={[
                   tw`w-2 h-2 rounded-full bg-[#C59A55]`,
@@ -176,25 +165,15 @@ export default function ZakatGuideScreen() {
                 ]}
               />
 
-              <Text style={eyebrowStyle}>
-                {t("guide.eyebrow")}
-              </Text>
+              <Text style={eyebrowStyle}>{t("guide.eyebrow")}</Text>
             </View>
 
-            <Text
-              style={[
-                tw`text-3xl font-bold text-[#174C3C]`,
-                titleStyle,
-              ]}
-            >
+            <Text style={[tw`text-3xl font-bold text-[#174C3C]`, titleStyle]}>
               {t("guide.title")}
             </Text>
 
             <Text
-              style={[
-                tw`text-sm leading-6 text-[#777D72] mt-3`,
-                textDirection,
-              ]}
+              style={[tw`text-sm leading-6 text-[#777D72] mt-3`, textDirection]}
             >
               {t("guide.subtitle")}
             </Text>
@@ -204,31 +183,19 @@ export default function ZakatGuideScreen() {
             <View style={tw`py-24 items-center`}>
               <ActivityIndicator size="large" color="#174C3C" />
 
-              <Text
-                style={[
-                  tw`text-sm text-[#777D72] mt-4`,
-                  textDirection,
-                ]}
-              >
+              <Text style={[tw`text-sm text-[#777D72] mt-4`, textDirection]}>
                 {t("guide.loading")}
               </Text>
             </View>
           ) : error || !info ? (
-            <View
-              style={tw`bg-white rounded-2xl p-6 border border-[#EAE8DF]`}
-            >
+            <View style={tw`bg-white rounded-2xl p-6 border border-[#EAE8DF]`}>
               <View
                 style={tw`w-11 h-11 rounded-full bg-[#F4E9D3] items-center justify-center mb-4`}
               >
                 <Text style={tw`text-xl text-[#9B7842]`}>!</Text>
               </View>
 
-              <Text
-                style={[
-                  tw`text-lg font-bold text-[#174C3C]`,
-                  titleStyle,
-                ]}
-              >
+              <Text style={[tw`text-lg font-bold text-[#174C3C]`, titleStyle]}>
                 {t("guide.error.title")}
               </Text>
 
@@ -246,10 +213,7 @@ export default function ZakatGuideScreen() {
                 style={tw`mt-5 self-start`}
               >
                 <Text
-                  style={[
-                    tw`text-sm font-bold text-[#9B7842]`,
-                    textDirection,
-                  ]}
+                  style={[tw`text-sm font-bold text-[#9B7842]`, textDirection]}
                 >
                   {t("guide.error.retry")} {isArabic ? "←" : "→"}
                 </Text>
@@ -269,28 +233,19 @@ export default function ZakatGuideScreen() {
                 </Text>
 
                 <Text
-                  style={[
-                    tw`text-2xl font-bold text-white mb-4`,
-                    titleStyle,
-                  ]}
+                  style={[tw`text-2xl font-bold text-white mb-4`, titleStyle]}
                 >
                   {t("guide.whatIsZakat")}
                 </Text>
 
                 <Text
-                  style={[
-                    tw`text-sm leading-7 text-[#F0F4ED]`,
-                    textDirection,
-                  ]}
+                  style={[tw`text-sm leading-7 text-[#F0F4ED]`, textDirection]}
                 >
                   {content.definition}
                 </Text>
 
                 <View
-                  style={tw.style(
-                    "flex-row items-center mt-6",
-                    rowDirection,
-                  )}
+                  style={tw.style("flex-row items-center mt-6", rowDirection)}
                 >
                   <View style={tw`h-px flex-1 bg-[#527263]`} />
                   <View style={tw`w-2 h-2 rounded-full bg-[#C59A55] mx-3`} />
@@ -300,14 +255,9 @@ export default function ZakatGuideScreen() {
 
               <View style={tw`mb-9`}>
                 <View
-                  style={tw.style(
-                    "flex-row items-center mb-5",
-                    rowDirection,
-                  )}
+                  style={tw.style("flex-row items-center mb-5", rowDirection)}
                 >
-                  <Text style={sectionNumberStyle}>
-                    {numberSections[0]}
-                  </Text>
+                  <Text style={sectionNumberStyle}>{numberSections[0]}</Text>
 
                   <View style={tw`flex-1 h-px bg-[#E5E2D8]`} />
                 </View>
@@ -321,10 +271,7 @@ export default function ZakatGuideScreen() {
 
               <View style={tw`bg-[#E8EEE5] rounded-2xl p-5 mb-9`}>
                 <View
-                  style={tw.style(
-                    "flex-row items-center mb-3",
-                    rowDirection,
-                  )}
+                  style={tw.style("flex-row items-center mb-3", rowDirection)}
                 >
                   <View
                     style={[
@@ -333,9 +280,7 @@ export default function ZakatGuideScreen() {
                     ]}
                   />
 
-                  <Text style={labelStyle}>
-                    {t("guide.importantConcept")}
-                  </Text>
+                  <Text style={labelStyle}>{t("guide.importantConcept")}</Text>
                 </View>
 
                 <Text
@@ -348,10 +293,7 @@ export default function ZakatGuideScreen() {
                 </Text>
 
                 <Text
-                  style={[
-                    tw`text-sm leading-7 text-[#5F705F]`,
-                    textDirection,
-                  ]}
+                  style={[tw`text-sm leading-7 text-[#5F705F]`, textDirection]}
                 >
                   {content.hawl}
                 </Text>
@@ -359,14 +301,9 @@ export default function ZakatGuideScreen() {
 
               <View style={tw`mb-9`}>
                 <View
-                  style={tw.style(
-                    "flex-row items-center mb-5",
-                    rowDirection,
-                  )}
+                  style={tw.style("flex-row items-center mb-5", rowDirection)}
                 >
-                  <Text style={sectionNumberStyle}>
-                    {numberSections[1]}
-                  </Text>
+                  <Text style={sectionNumberStyle}>{numberSections[1]}</Text>
 
                   <View style={tw`flex-1 h-px bg-[#E5E2D8]`} />
                 </View>
@@ -381,14 +318,9 @@ export default function ZakatGuideScreen() {
 
               <View style={tw`mb-9`}>
                 <View
-                  style={tw.style(
-                    "flex-row items-center mb-5",
-                    rowDirection,
-                  )}
+                  style={tw.style("flex-row items-center mb-5", rowDirection)}
                 >
-                  <Text style={sectionNumberStyle}>
-                    {numberSections[2]}
-                  </Text>
+                  <Text style={sectionNumberStyle}>{numberSections[2]}</Text>
 
                   <View style={tw`flex-1 h-px bg-[#E5E2D8]`} />
                 </View>
@@ -403,14 +335,9 @@ export default function ZakatGuideScreen() {
 
               <View style={tw`mb-9`}>
                 <View
-                  style={tw.style(
-                    "flex-row items-center mb-5",
-                    rowDirection,
-                  )}
+                  style={tw.style("flex-row items-center mb-5", rowDirection)}
                 >
-                  <Text style={sectionNumberStyle}>
-                    {numberSections[3]}
-                  </Text>
+                  <Text style={sectionNumberStyle}>{numberSections[3]}</Text>
 
                   <View style={tw`flex-1 h-px bg-[#E5E2D8]`} />
                 </View>
@@ -429,8 +356,7 @@ export default function ZakatGuideScreen() {
                     key={rate.label}
                     style={tw.style(
                       "py-4",
-                      index !== rates.length - 1 &&
-                        "border-b border-[#EAE8DF]",
+                      index !== rates.length - 1 && "border-b border-[#EAE8DF]",
                     )}
                   >
                     <Text
@@ -456,14 +382,9 @@ export default function ZakatGuideScreen() {
 
               <View style={tw`mb-9`}>
                 <View
-                  style={tw.style(
-                    "flex-row items-center mb-5",
-                    rowDirection,
-                  )}
+                  style={tw.style("flex-row items-center mb-5", rowDirection)}
                 >
-                  <Text style={sectionNumberStyle}>
-                    {numberSections[4]}
-                  </Text>
+                  <Text style={sectionNumberStyle}>{numberSections[4]}</Text>
 
                   <View style={tw`flex-1 h-px bg-[#E5E2D8]`} />
                 </View>
@@ -479,10 +400,7 @@ export default function ZakatGuideScreen() {
                 style={tw`bg-white rounded-2xl p-5 mb-9 border border-[#EAE8DF]`}
               >
                 <View
-                  style={tw.style(
-                    "flex-row items-center mb-5",
-                    rowDirection,
-                  )}
+                  style={tw.style("flex-row items-center mb-5", rowDirection)}
                 >
                   <View
                     style={[
@@ -497,19 +415,13 @@ export default function ZakatGuideScreen() {
 
                   <View style={tw`flex-1`}>
                     <Text
-                      style={[
-                        tw`text-xl font-bold text-[#174C3C]`,
-                        titleStyle,
-                      ]}
+                      style={[tw`text-xl font-bold text-[#174C3C]`, titleStyle]}
                     >
                       {t("guide.nisab.title")}
                     </Text>
 
                     <Text
-                      style={[
-                        tw`text-xs text-[#85897F] mt-1`,
-                        textDirection,
-                      ]}
+                      style={[tw`text-xs text-[#85897F] mt-1`, textDirection]}
                     >
                       {t("guide.nisab.description")}
                     </Text>
@@ -537,7 +449,8 @@ export default function ZakatGuideScreen() {
                   >
                     {info.nisab.gold.grams}
                     <Text style={tw`text-sm font-medium text-[#777D72]`}>
-                      {" "}{t("guide.nisab.grams")}
+                      {" "}
+                      {t("guide.nisab.grams")}
                     </Text>
                   </Text>
 
@@ -572,7 +485,8 @@ export default function ZakatGuideScreen() {
                   >
                     {info.nisab.silver.grams}
                     <Text style={tw`text-sm font-medium text-[#777D72]`}>
-                      {" "}{t("guide.nisab.grams")}
+                      {" "}
+                      {t("guide.nisab.grams")}
                     </Text>
                   </Text>
 
@@ -600,10 +514,7 @@ export default function ZakatGuideScreen() {
 
               <View style={tw`bg-[#F4E9D3] rounded-2xl p-5 mb-9`}>
                 <View
-                  style={tw.style(
-                    "flex-row items-center mb-3",
-                    rowDirection,
-                  )}
+                  style={tw.style("flex-row items-center mb-3", rowDirection)}
                 >
                   <Text
                     style={[
@@ -615,20 +526,14 @@ export default function ZakatGuideScreen() {
                   </Text>
 
                   <Text
-                    style={[
-                      tw`text-sm font-bold text-[#80602F]`,
-                      titleStyle,
-                    ]}
+                    style={[tw`text-sm font-bold text-[#80602F]`, titleStyle]}
                   >
                     {t("guide.disclaimer.title")}
                   </Text>
                 </View>
 
                 <Text
-                  style={[
-                    tw`text-xs leading-6 text-[#6D5B3E]`,
-                    textDirection,
-                  ]}
+                  style={[tw`text-xs leading-6 text-[#6D5B3E]`, textDirection]}
                 >
                   {content.disclaimer}
                 </Text>
@@ -662,19 +567,13 @@ export default function ZakatGuideScreen() {
                   ]}
                 >
                   <Text
-                    style={[
-                      tw`text-base font-bold text-white`,
-                      titleStyle,
-                    ]}
+                    style={[tw`text-base font-bold text-white`, titleStyle]}
                   >
                     {t("guide.calculator.title")}
                   </Text>
 
                   <Text
-                    style={[
-                      tw`text-xs text-[#DCE5D5] mt-2`,
-                      textDirection,
-                    ]}
+                    style={[tw`text-xs text-[#DCE5D5] mt-2`, textDirection]}
                   >
                     {t("guide.calculator.description")}
                   </Text>

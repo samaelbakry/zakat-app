@@ -1,6 +1,6 @@
 {
   "home": {
-    "greeting": "Assalamu Alaikum,",
+    "greeting": "Assalamu Alaikum ,",
     "personalSpace": "Your personal zakat space",
     "welcome": "Stay updated with current market prices.",
     "language": "Language",
@@ -12,6 +12,7 @@
       "silver": "Silver",
       "perGram": "Per gram",
       "updated": "Updated:",
+      "disclaimer": "Spot prices are indicative. Local dealers may price slightly differently.",
       "fallback": "Currently showing fallback prices."
     },
     "error": {
@@ -127,6 +128,103 @@
     "calculator": {
       "title": "Continue to Calculator",
       "description": "Apply what you've learned."
+    }
+  },
+  "calculator": {
+    "back": "Back",
+    "eyebrow": "Personal calculation",
+    "title": "Zakat Calculator",
+    "subtitle": "Enter your zakatable wealth and liabilities to calculate your zakat.",
+    "sections": {
+      "currency": "Currency",
+      "goldKarat": "Gold Karat",
+      "wealth": "Your Wealth",
+      "liabilities": "Liabilities",
+      "nisab": "Nisab Standard"
+    },
+    "goldNote": "Gold weight will be converted to its 24K equivalent before calculation.",
+    "nisabDescription": "Choose the standard used to determine the nisab threshold.",
+    "calculate": "Calculate Zakat",
+    "calculating": "Calculating...",
+    "errors": {
+      "invalidFormat": "Invalid format",
+      "invalidFormatDescription": "Please enter numbers without commas.",
+      "invalidAmount": "Invalid amount",
+      "invalidAmountDescription": "Please enter a valid non-negative number for {{field}}.",
+      "calculationFailed": "Calculation failed",
+      "genericError": "Something went wrong. Please try again."
+    },
+    "result": {
+      "eyebrow": "Calculation Result",
+      "zakatDue": "Zakat Due (2.5%)",
+      "aboveNisab": "Your wealth is above Nisab",
+      "belowNisab": "Your wealth is below Nisab",
+      "breakdown": "Breakdown",
+      "pricesUsed": "Prices Used",
+      "gold": "Gold",
+      "silver": "Silver",
+      "perGram": "per gram",
+      "updated": "Updated",
+      "fallbackWarning": "Warning: fallback prices were used.",
+      "footer": "Clarity in calculation · Confidence in giving",
+      "breakdownItems": {
+        "cash": "Cash",
+        "goldValue": "Gold value",
+        "silverValue": "Silver value",
+        "stocks": "Stocks",
+        "businessGoods": "Business goods",
+        "otherInvestments": "Other investments",
+        "grossWealth": "Gross wealth",
+        "liabilities": "Liabilities",
+        "netZakatableWealth": "Net zakatable wealth"
+      }
+    },
+    "nisabOptions": {
+      "gold": "Gold",
+      "silver": "Silver"
+    },
+    "fields": {
+      "cash": {
+        "label": "Cash & Savings",
+        "hint": "Money in cash and bank accounts",
+        "placeholder": "Enter amount"
+      },
+      "gold_grams": {
+        "label": "Gold",
+        "hint": "Enter the weight of your gold in grams",
+        "placeholder": "Weight in grams"
+      },
+      "silver_grams": {
+        "label": "Silver",
+        "hint": "Enter the weight of your silver in grams",
+        "placeholder": "Weight in grams"
+      },
+      "stocks": {
+        "label": "Stocks & Shares",
+        "hint": "Current monetary value",
+        "placeholder": "Enter amount"
+      },
+      "business_goods": {
+        "label": "Business Goods",
+        "hint": "Value of your trade inventory",
+        "placeholder": "Enter amount"
+      },
+      "other_investments": {
+        "label": "Other Investments",
+        "hint": "Other zakatable investments",
+        "placeholder": "Enter amount"
+      },
+      "liabilities": {
+        "label": "Liabilities",
+        "hint": "Debts and liabilities to deduct",
+        "placeholder": "Enter amount"
+      }
+    }
+  },
+  "calculatorContent": {
+    "resultNote": {
+      "aboveNisab": "Your net wealth meets or exceeds the Nisab threshold ({{value}}). Zakat is due.",
+      "belowNisab": "Net wealth is below the Nisab threshold ({{value}}). No Zakat is due."
     }
   }
 }

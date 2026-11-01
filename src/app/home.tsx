@@ -1,5 +1,4 @@
 import LogoutButton from "@/components/auth/LogoutButton";
-import LanguageSwitcher from "@/components/home/LanguageSwitcher";
 import { useAuth } from "@/context/AuthContext";
 import { formatCurrency, formatDate } from "@/lib/helpers";
 import { getZakatPrices } from "@/services/zakat";
@@ -105,20 +104,6 @@ export default function HomeScreen() {
           >
             {t("home.welcome")}
           </Text>
-        </View>
-
-        <View style={tw`${rowDirection} justify-between items-center mb-6`}>
-          <Text
-            style={[
-              tw`text-sm font-semibold text-[#174C3C]`,
-              tw`${textDirection}`,
-              textStyle,
-            ]}
-          >
-            {t("home.language")}
-          </Text>
-
-          <LanguageSwitcher />
         </View>
 
         {loading ? (
@@ -294,30 +279,9 @@ export default function HomeScreen() {
                     { writingDirection: "ltr", textAlign: "left" },
                   ]}
                 >
-                  {formatDate(prices.as_of)}
+                  {formatDate(prices.as_of, i18n.language)}
                 </Text>
               </View>
-
-              {prices.is_fallback && (
-                <View style={tw`${rowDirection} items-center mt-3`}>
-                  <View
-                    style={[
-                      tw`w-1.5 h-1.5 rounded-full bg-[#E4D0A5]`,
-                      isArabic ? tw`ml-2` : tw`mr-2`,
-                    ]}
-                  />
-
-                  <Text
-                    style={[
-                      tw`text-xs text-[#E4D0A5]`,
-                      tw`${textDirection}`,
-                      textStyle,
-                    ]}
-                  >
-                    {t("home.market.fallback")}
-                  </Text>
-                </View>
-              )}
 
               <Text
                 style={[
@@ -326,7 +290,7 @@ export default function HomeScreen() {
                   textStyle,
                 ]}
               >
-                {prices.note}
+                {t("home.market.disclaimer")}
               </Text>
             </View>
 
