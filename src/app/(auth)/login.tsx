@@ -89,7 +89,7 @@ export default function Login() {
           </Text>
 
           <Text style={[tw`text-sm font-semibold text-[#174C3C]`, textDirection]}>
-            {t("auth.register.back")}
+            {t("auth.login.back")}
           </Text>
         </Pressable>
 

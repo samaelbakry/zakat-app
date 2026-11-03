@@ -195,7 +195,7 @@ export default function ZakatCalculatorScreen() {
       >
         <Animated.View style={{ opacity: fadeAnim }}>
           <Pressable
-            onPress={() => router.back()}
+            onPress={() => router.replace("/home")}
             style={tw`${rowDirection} items-center mb-9`}
           >
             <Text

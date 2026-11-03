@@ -44,6 +44,7 @@
       "haveAccount": "Already have an account?",
       "signIn": "Sign in",
       "footer": "Mindful giving starts here",
+      "loading": "Creating account...",
       "errors": {
         "missingTitle": "Missing information",
         "missingDescription": "Please complete all fields.",
