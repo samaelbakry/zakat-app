@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, router } from "expo-router";
 import {
@@ -9,7 +10,10 @@ import {
   Text,
   TextInput,
   View,
+  ViewStyle,
+  type TextStyle,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import tw from "twrnc";
 import { signIn } from "@/services/auth";
 
@@ -18,21 +22,41 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  async function handleLogin() {
+  const { t, i18n } = useTranslation();
+
+  const isArabic = i18n.language.startsWith("ar");
+
+ const rowStyle: ViewStyle = {
+    flexDirection: isArabic ? "row-reverse" : "row",
+  };
+
+  const textDirection: TextStyle = {
+    writingDirection: isArabic ? "rtl" : "ltr",
+    textAlign: isArabic ? "right" : "left",
+    letterSpacing: isArabic ? 0 : undefined,
+  };
+
+  const handleLogin = async () => {
     if (!email.trim() || !password) {
-      Alert.alert("Missing information", "Enter your email and password.");
+      Alert.alert(
+        t("auth.login.errors.missingTitle"),
+        t("auth.login.errors.missingDescription"),
+      );
       return;
     }
+
     try {
       await signIn(email, password);
     } catch (error) {
       const message =
         error instanceof Error
           ? error.message
-          : "Something went wrong. Please try again.";
-      Alert.alert("Sign in failed", message);
+          : t("auth.login.errors.generic");
+
+      Alert.alert(t("auth.login.errors.failedTitle"), message);
     }
-  }
+  };
+
 
   return (
     <KeyboardAvoidingView
@@ -44,81 +68,142 @@ export default function Login() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={tw`flex-grow px-6 pt-6 pb-8`}
       >
-        <Pressable
+       <Pressable
           onPress={() => router.back()}
-          accessibilityRole="button"
-          style={tw`self-start flex-row items-center my-7`}
+          style={[
+            tw`items-center my-7`,
+            rowStyle,
+            { alignSelf: isArabic ? "flex-end" : "flex-start" },
+          ]}
           hitSlop={10}
         >
-          <Text style={tw`text-lg text-[#174C3C] mr-2`}>←</Text>
-          <Text style={tw`text-sm font-semibold text-[#174C3C]`}>Back</Text>
+          <Text
+            style={[
+              tw`text-lg text-[#174C3C]`,
+              isArabic
+                ? { marginLeft: 8 }
+                : { marginRight: 8 },
+            ]}
+          >
+            {isArabic ? "→" : "←"}
+          </Text>
+
+          <Text style={[tw`text-sm font-semibold text-[#174C3C]`, textDirection]}>
+            {t("auth.register.back")}
+          </Text>
         </Pressable>
 
         <View style={tw`mb-9`}>
-          
           <Text
-            style={tw`text-[10px] font-bold uppercase tracking-[2px] text-[#9A7B45] mb-3`}
+            style={[
+              tw`text-[10px] font-bold uppercase text-[#9A7B45] mb-3`,
+              isArabic ? {} : tw`tracking-[2px]`,
+              textDirection,
+            ]}
           >
-            Welcome back
+            {t("auth.login.welcome")}
           </Text>
 
           <Text
-            style={tw`font-display text-[38px] leading-[45px] text-[#174C3C]`}
+            style={[
+              tw`font-display text-[38px] leading-[45px] text-[#174C3C]`,
+              textDirection,
+            ]}
           >
-            Good to see
+            {t("auth.login.titleLine1")}
           </Text>
 
           <Text
-            style={tw`font-display text-[38px] leading-[45px] italic text-[#174C3C]`}
+            style={[
+              tw`font-display text-[38px] leading-[45px] italic text-[#174C3C]`,
+              textDirection,
+            ]}
           >
-            you again.
+            {t("auth.login.titleLine2")}
           </Text>
 
-          <Text style={tw`text-sm leading-6 text-[#777D72] mt-4`}>
-            Sign in to manage your assets and continue your zakat journey.
+          <Text
+            style={[
+              tw`text-sm leading-6 text-[#777D72] mt-4`,
+              textDirection,
+            ]}
+          >
+            {t("auth.login.subtitle")}
           </Text>
         </View>
 
         <View>
-          <Text style={tw`text-xs font-bold text-[#24382D] mb-2`}>
-            Email address
+          <Text
+            style={[
+              tw`text-xs font-bold text-[#24382D] mb-2`,
+              textDirection,
+            ]}
+          >
+            {t("auth.login.email")}
           </Text>
 
           <View
-            style={tw`flex-row items-center bg-white border border-[#E7E5DB] rounded-2xl px-4 mb-5`}
+            style={tw.style(
+              "flex-row items-center bg-white border border-[#E7E5DB] rounded-2xl px-4 mb-5",
+              rowStyle,
+            )}
           >
-            <Text style={tw`text-[#9A7B45] text-base mr-3`}>@</Text>
+            <Text
+              style={[
+                tw`text-[#9A7B45] text-base`,
+                isArabic ? { marginLeft: 12 } : { marginRight: 12 },
+              ]}
+            >
+              @
+            </Text>
 
             <TextInput
               value={email}
               onChangeText={setEmail}
-              placeholder="you@example.com"
+              placeholder={t("auth.login.emailPlaceholder")}
               placeholderTextColor="#A0A196"
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
               autoComplete="email"
+              textAlign="left"
               style={tw`flex-1 py-4 text-sm text-[#24382D]`}
             />
           </View>
 
-          <View style={tw`flex-row items-center justify-between mb-2`}>
-            <Text style={tw`text-xs font-bold text-[#24382D]`}>Password</Text>
-          </View>
+          <Text
+            style={[
+              tw`text-xs font-bold text-[#24382D] mb-2`,
+              textDirection,
+            ]}
+          >
+            {t("auth.login.password")}
+          </Text>
 
           <View
-            style={tw`flex-row items-center bg-white border border-[#E7E5DB] rounded-2xl px-4`}
+            style={tw.style(
+              "flex-row items-center bg-white border border-[#E7E5DB] rounded-2xl px-4",
+              rowStyle,
+            )}
           >
-            <Text style={tw`text-[#9A7B45] text-base mr-3`}>⌑</Text>
+            <Text
+              style={[
+                tw`text-[#9A7B45] text-base`,
+                isArabic ? { marginLeft: 12 } : { marginRight: 12 },
+              ]}
+            >
+              ⌑
+            </Text>
 
             <TextInput
               value={password}
               onChangeText={setPassword}
-              placeholder="Enter your password"
+              placeholder={t("auth.login.passwordPlaceholder")}
               placeholderTextColor="#A0A196"
               secureTextEntry={!showPassword}
               autoCapitalize="none"
               autoComplete="current-password"
+              textAlign={isArabic ? "right" : "left"}
               style={tw`flex-1 py-4 text-sm text-[#24382D]`}
             />
 
@@ -127,13 +212,20 @@ export default function Login() {
               hitSlop={10}
               accessibilityRole="button"
               accessibilityLabel={
-                showPassword ? "Hide password" : "Show password"
+                showPassword
+                  ? t("auth.login.hidePassword")
+                  : t("auth.login.showPassword")
               }
             >
               <Text
-                style={tw`text-[10px] font-bold tracking-wider text-[#648064]`}
+                style={[
+                  tw`text-[10px] font-bold text-[#648064]`,
+                  isArabic ? {} : tw`tracking-wider`,
+                ]}
               >
-                {showPassword ? "HIDE" : "SHOW"}
+                {showPassword
+                  ? t("auth.login.hidePassword")
+                  : t("auth.login.showPassword")}
               </Text>
             </Pressable>
           </View>
@@ -142,35 +234,77 @@ export default function Login() {
             onPress={handleLogin}
             accessibilityRole="button"
             style={({ pressed }) => [
-              tw`flex-row items-center justify-center bg-[#174C3C] rounded-2xl py-[17px] px-5 my-2`,
-              pressed && { opacity: 0.85, transform: [{ scale: 0.985 }] },
+              tw.style(
+                "flex-row items-center justify-center bg-[#174C3C] rounded-2xl py-[17px] px-5 my-2",
+                rowStyle,
+              ),
+              pressed && {
+                opacity: 0.85,
+                transform: [{ scale: 0.985 }],
+              },
             ]}
           >
-            <Text style={tw`text-sm font-bold text-white tracking-wide`}>
-              Sign in
+            <Text
+              style={[
+                tw`text-sm font-bold text-white`,
+                isArabic ? {} : tw`tracking-wide`,
+              ]}
+            >
+              {t("auth.login.submit")}
             </Text>
-            <Text style={tw`text-lg text-[#E4D0A5] ml-3`}>→</Text>
+
+            <Text
+              style={[
+                tw`text-lg text-[#E4D0A5]`,
+                isArabic ? { marginRight: 12 } : { marginLeft: 12 },
+              ]}
+            >
+              {isArabic ? "←" : "→"}
+            </Text>
           </Pressable>
 
-          <View style={tw`flex-row justify-center flex-wrap mt-7`}>
-            <Text style={tw`text-sm text-[#777D72]`}>New to Zakat? </Text>
+          <View
+            style={tw.style(
+              "flex-row justify-center flex-wrap mt-7",
+              rowStyle,
+            )}
+          >
+            <Text
+              style={[
+                tw`text-sm text-[#777D72]`,
+                textDirection,
+              ]}
+            >
+              {t("auth.login.noAccount")}{" "}
+            </Text>
 
             <Link
               href="/(auth)/register"
-              style={tw`text-sm font-bold text-[#174C3C]`}
+              style={[
+                tw`text-sm font-bold text-[#174C3C]`,
+                textDirection,
+              ]}
             >
-              Create an account
+              {t("auth.login.register")}
             </Link>
           </View>
         </View>
 
-        <View style={tw`flex-row items-center mt-10 mb-2`}>
+        <View
+          style={tw.style(
+            "flex-row items-center mt-10 mb-2",
+            rowStyle,
+          )}
+        >
           <View style={tw`h-px flex-1 bg-[#E7E4D9]`} />
 
           <Text
-            style={tw`text-[9px] uppercase tracking-[1.5px] text-[#999B90] mx-3`}
+            style={[
+              tw`text-[9px] text-[#999B90] mx-3`,
+              isArabic ? {} : tw`tracking-[1.5px] uppercase`,
+            ]}
           >
-            Mindful giving starts here
+            {t("auth.login.footer")}
           </Text>
 
           <View style={tw`h-px flex-1 bg-[#E7E4D9]`} />

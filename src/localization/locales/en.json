@@ -1,4 +1,91 @@
 {
+  "auth": {
+    "login": {
+      "back": "Back",
+      "welcome": "Welcome back",
+      "titleLine1": "Good to see",
+      "titleLine2": "you again.",
+      "subtitle": "Sign in to manage your assets and continue your zakat journey.",
+      "email": "Email address",
+      "emailPlaceholder": "you@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "showPassword": "SHOW",
+      "hidePassword": "HIDE",
+      "submit": "Sign in",
+      "noAccount": "New to Zakat?",
+      "register": "Create an account",
+      "footer": "Mindful giving starts here",
+      "errors": {
+        "missingTitle": "Missing information",
+        "missingDescription": "Enter your email and password.",
+        "failedTitle": "Sign in failed",
+        "generic": "Something went wrong. Please try again."
+      }
+    },
+    "register": {
+      "back": "Back",
+      "eyebrow": "Begin your journey",
+      "titleLine1": "Create your",
+      "titleLine2": "account.",
+      "subtitle": "A simpler way to calculate, organize, and manage your zakat.",
+      "fullName": "Full name",
+      "fullNamePlaceholder": "Enter your full name",
+      "email": "Email address",
+      "emailPlaceholder": "you@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "At least 8 characters",
+      "confirmPassword": "Confirm password",
+      "confirmPasswordPlaceholder": "Re-enter your password",
+      "showPassword": "SHOW",
+      "hidePassword": "HIDE",
+      "passwordHint": "Choose a password with at least 8 characters to help protect your account.",
+      "submit": "Create account",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "footer": "Mindful giving starts here",
+      "errors": {
+        "missingTitle": "Missing information",
+        "missingDescription": "Please complete all fields.",
+        "invalidEmailTitle": "Invalid email",
+        "invalidEmailDescription": "Please enter a valid email address.",
+        "weakPasswordTitle": "Weak password",
+        "weakPasswordDescription": "Use at least 8 characters.",
+        "passwordMismatchTitle": "Password mismatch",
+        "passwordMismatchDescription": "Your passwords do not match.",
+        "checkEmailTitle": "Check your email",
+        "checkEmailDescription": "If a confirmation email was sent, follow its instructions before signing in.",
+        "rateLimitTitle": "Too many attempts",
+        "rateLimitDescription": "Email sending is temporarily limited. Please try again later.",
+        "failedTitle": "Registration failed",
+        "generic": "Something went wrong. Please try again."
+      }
+    }
+  },
+  "welcome": {
+    "eyebrow": "Your giving journey",
+    "titleLine1": "Give with",
+    "titleLine2": "confidence.",
+    "description": "Calculate your zakat, organize your assets, and make room for what matters.",
+    "features": {
+      "calculate": {
+        "title": "Calculate your zakat",
+        "description": "Know where you stand."
+      },
+      "assets": {
+        "title": "Organize your assets",
+        "description": "Keep money and gold together."
+      }
+    },
+    "reminder": {
+      "title": "A gentle reminder",
+      "translation": "And establish prayer and give zakat.",
+      "surah": "Surah An-Nur"
+    },
+    "getStarted": "Get started",
+    "alreadyHaveAccount": "I already have an account",
+    "footer": "Clarity in calculation · Confidence in giving"
+  },
   "home": {
     "greeting": "Assalamu Alaikum ,",
     "personalSpace": "Your personal zakat space",
@@ -37,7 +124,6 @@
       "description": "Calculate your zakatable wealth."
     }
   },
-
   "guideContent": {
     "definition": "Zakat is the third pillar of Islam — an obligatory annual payment of 2.5% on qualifying wealth held above the nisab threshold for one lunar year.",
     "nisab": {

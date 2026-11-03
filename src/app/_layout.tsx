@@ -1,4 +1,3 @@
-
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { Stack } from "expo-router";
 import { View } from "react-native";
@@ -6,11 +5,22 @@ import tw from "twrnc";
 import "../localization/i18n";
 import LanguageSwitcher from "@/components/home/LanguageSwitcher";
 import SplashScreen from "@/components/ui/SplashScreen";
+import { useEffect, useState } from "react";
 
 function RootNavigator() {
   const { session, loading } = useAuth();
+  const [splash, setSplash] = useState(true);
 
-  if (loading) {
+  useEffect(() => {
+    if (loading) return;
+    const timer = setTimeout(() => {
+      setSplash(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [loading]);
+
+  if (loading || splash) {
     return <SplashScreen />;
   }
 
