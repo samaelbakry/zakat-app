@@ -6,6 +6,7 @@ import "../localization/i18n";
 import LanguageSwitcher from "@/components/home/LanguageSwitcher";
 import SplashScreen from "@/components/ui/SplashScreen";
 import { useEffect, useState } from "react";
+import { ThemeProvider } from "@/context/ThemeContext";
 
 function RootNavigator() {
   const { session, loading } = useAuth();
@@ -52,8 +53,10 @@ function RootNavigator() {
 
 export default function RootLayout() {
   return (
+    <ThemeProvider>
     <AuthProvider>
       <RootNavigator />
     </AuthProvider>
+    </ThemeProvider>
   );
 }
