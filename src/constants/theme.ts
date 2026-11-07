@@ -12,16 +12,16 @@ export const lightColors = {
 };
 
 export const darkColors = {
-  background: "#1B211D",
-  card: "#252E28",
-  surface: "#303B33",
-  primary: "#8DB8A0",
-  accent: "#D6B779",
-  text: "#F1F3EF",
-  secondaryText: "#C0C8C0",
-  muted: "#9BA69C",
-  border: "#3B473F",
-  input: "#2A342D",
+  background: "#202722",
+  card: "#29332C",
+  surface: "#323D34",
+  primary: "#9AB9A3",
+  accent: "#CDB17A",
+  text: "#E2E8E1",
+  secondaryText: "#B1BDB2",
+  muted: "#89978B",
+  border: "#3D493F",
+  input: "#2D3730",
 };
 
 export type ThemeColors = typeof lightColors;

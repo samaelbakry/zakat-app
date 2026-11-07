@@ -1,5 +1,6 @@
 import { Text, TextInput, View } from "react-native";
 import tw from "twrnc";
+import { useTheme } from "@/context/ThemeContext";
 
 type FormFieldProps = {
   label: string;
@@ -22,17 +23,22 @@ export default function FormField({
   currency,
   isArabic = false,
 }: FormFieldProps) {
+  const { colors, isDarkMode } = useTheme();
+
   const displayedUnit = unit === "EGP" ? currency : unit;
+
+  const textDirection = {
+    textAlign: isArabic ? ("right" as const) : ("left" as const),
+    writingDirection: isArabic ? ("rtl" as const) : ("ltr" as const),
+  };
 
   return (
     <View style={tw`mb-5`}>
       <Text
         style={[
-          tw`text-sm font-bold text-[#174C3C]`,
-          {
-            textAlign: isArabic ? "right" : "left",
-            writingDirection: isArabic ? "rtl" : "ltr",
-          },
+          tw`text-sm font-bold`,
+          textDirection,
+          { color: colors.primary },
         ]}
       >
         {label}
@@ -40,11 +46,9 @@ export default function FormField({
 
       <Text
         style={[
-          tw`text-xs text-[#85897F] mt-1 mb-3`,
-          {
-            textAlign: isArabic ? "right" : "left",
-            writingDirection: isArabic ? "rtl" : "ltr",
-          },
+          tw`text-xs mt-1 mb-3`,
+          textDirection,
+          { color: colors.secondaryText },
         ]}
       >
         {hint}
@@ -52,26 +56,36 @@ export default function FormField({
 
       <View
         style={[
-          tw`flex-row items-center bg-white border border-[#E9E6DC] rounded-xl px-4`,
+          tw`flex-row items-center rounded-xl px-4 border`,
           isArabic && tw`flex-row-reverse`,
+          {
+            backgroundColor: colors.input,
+            borderColor: colors.border,
+          },
         ]}
       >
         <TextInput
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor="#A5A69D"
+          placeholderTextColor={colors.muted}
           keyboardType="decimal-pad"
           style={[
-            tw`flex-1 py-4 text-sm text-[#24382D]`,
+            tw`flex-1 py-4 text-sm`,
             {
+              color: colors.text,
               textAlign: isArabic ? "right" : "left",
               writingDirection: "ltr",
             },
           ]}
         />
 
-        <Text style={tw`text-xs font-bold text-[#A77A35] mx-2`}>
+        <Text
+          style={[
+            tw`text-xs font-bold mx-2`,
+            { color: isDarkMode ? "#D9BD83" : colors.accent },
+          ]}
+        >
           {displayedUnit}
         </Text>
       </View>

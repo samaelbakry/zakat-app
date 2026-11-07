@@ -1,4 +1,5 @@
 import FormField from "@/components/ui/FormField";
+import { useTheme } from "@/context/ThemeContext";
 import { FieldKey, fields } from "@/constants/zakatConstants";
 import { formatDate, formatMoney } from "@/lib/helpers";
 import { calculateZakat } from "@/services/zakat";
@@ -20,6 +21,7 @@ import {
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import tw from "twrnc";
+import SectionHeader from "@/components/ui/SectionHeader";
 
 const initialValues: Record<FieldKey, string> = {
   cash: "",
@@ -45,8 +47,13 @@ const breakdownKeys = [
 
 export default function ZakatCalculatorScreen() {
   const { t, i18n } = useTranslation();
-
+  const { colors, isDarkMode } = useTheme();
   const isArabic = i18n.language.startsWith("ar");
+  const rowDirection = isArabic ? "flex-row-reverse" : "flex-row";
+  const textDirection = {
+    textAlign: isArabic ? ("right" as const) : ("left" as const),
+    writingDirection: isArabic ? ("rtl" as const) : ("ltr" as const),
+  };
 
   const [values, setValues] = useState(initialValues);
   const [currency, setCurrency] = useState("EGP");
@@ -60,44 +67,21 @@ export default function ZakatCalculatorScreen() {
 
   useEffect(() => {
     if (previousLanguage.current === i18n.language) return;
-
     previousLanguage.current = i18n.language;
 
     Animated.sequence([
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 150,
-        useNativeDriver: true,
-      }),
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 350,
-        useNativeDriver: true,
-      }),
+      Animated.timing(fadeAnim, { toValue: 0, duration: 150, useNativeDriver: true }),
+      Animated.timing(fadeAnim, { toValue: 1, duration: 350, useNativeDriver: true }),
     ]).start();
   }, [i18n.language, fadeAnim]);
 
-  const textDirection = {
-    textAlign: isArabic ? ("right" as const) : ("left" as const),
-    writingDirection: isArabic ? ("rtl" as const) : ("ltr" as const),
-  };
-
-  const rowDirection = isArabic ? "flex-row-reverse" : "flex-row";
-
   const updateField = (key: FieldKey, value: string) => {
-    setValues((previous) => ({
-      ...previous,
-      [key]: value,
-    }));
+    setValues((prev) => ({ ...prev, [key]: value }));
     setResult(null);
   };
 
-  const getFieldTranslation = (
-    key: FieldKey,
-    property: "label" | "hint" | "placeholder",
-  ) => {
-    return t(`calculator.fields.${key}.${property}`);
-  };
+  const fieldText = (key: FieldKey, property: "label" | "hint" | "placeholder") =>
+    t(`calculator.fields.${key}.${property}`);
 
   const handleCalculate = async () => {
     const input: ZakatCalculateInput = {
@@ -106,11 +90,10 @@ export default function ZakatCalculatorScreen() {
     };
 
     for (const field of fields) {
-      const rawValue = values[field.key].trim();
+      const raw = values[field.key].trim();
+      if (!raw) continue;
 
-      if (!rawValue) continue;
-
-      if (rawValue.includes(",")) {
+      if (raw.includes(",")) {
         Alert.alert(
           t("calculator.errors.invalidFormat"),
           t("calculator.errors.invalidFormatDescription"),
@@ -118,41 +101,34 @@ export default function ZakatCalculatorScreen() {
         return;
       }
 
-      const parsedValue = Number(rawValue);
-
-      if (!Number.isFinite(parsedValue) || parsedValue < 0) {
+      const amount = Number(raw);
+      if (!Number.isFinite(amount) || amount < 0) {
         Alert.alert(
           t("calculator.errors.invalidAmount"),
           t("calculator.errors.invalidAmountDescription", {
-            field: getFieldTranslation(field.key, "label"),
+            field: fieldText(field.key, "label"),
           }),
         );
         return;
       }
 
-      input[field.key] = parsedValue;
+      input[field.key] = amount;
     }
 
     if (values.gold_grams.trim()) {
-      const goldWeight = Number(values.gold_grams);
-
-      input.gold_grams = goldWeight * (goldKarat / 24);
+      input.gold_grams = Number(values.gold_grams) * (goldKarat / 24);
     }
 
     setLoading(true);
     setResult(null);
 
     try {
-      const calculation = await calculateZakat(input);
-      setResult(calculation);
-    } catch (error) {
-      console.error("Zakat calculation error:", error);
-
+      setResult(await calculateZakat(input));
+    } catch (err) {
+      console.error("Zakat calculation error:", err);
       Alert.alert(
         t("calculator.errors.calculationFailed"),
-        error instanceof Error
-          ? error.message
-          : t("calculator.errors.genericError"),
+        err instanceof Error ? err.message : t("calculator.errors.genericError"),
       );
     } finally {
       setLoading(false);
@@ -164,30 +140,23 @@ export default function ZakatCalculatorScreen() {
         result.above_nisab
           ? "calculatorContent.resultNote.aboveNisab"
           : "calculatorContent.resultNote.belowNisab",
-        {
-          value: formatMoney(result.nisab_value, currency),
-        },
+        { value: formatMoney(result.nisab_value, currency) },
       )
     : "";
 
-  const breakdownItems = result
-    ? [
-        result.breakdown.cash,
-        result.breakdown.gold_value,
-        result.breakdown.silver_value,
-        result.breakdown.stocks,
-        result.breakdown.business_goods,
-        result.breakdown.other_investments,
-        result.breakdown.gross_wealth,
-        result.breakdown.liabilities,
-        result.breakdown.net_zakatable_wealth,
-      ]
-    : [];
-
-  const { key: liabilitiesKey, ...liabilitiesFieldProps } = fields[6];
+  const { key: liabilitiesKey, ...liabilitiesProps } = fields[6];
+  const cardStyle = [
+    tw`rounded-3xl p-5 border mb-5`,
+    { backgroundColor: colors.card, borderColor: colors.border },
+  ];
+  const secondaryText = [tw`text-xs leading-6`, { color: colors.secondaryText }, textDirection];
+  const selectedStyle = tw`bg-[#174C3C] border-[#174C3C]`;
+  const unselectedStyle = [
+    { backgroundColor: colors.surface, borderColor: colors.border },
+  ];
 
   return (
-    <View style={tw`flex-1 bg-[#FAF9F5]`}>
+    <View style={[tw`flex-1`, { backgroundColor: colors.background }]}>
       <ScrollView
         contentContainerStyle={tw`px-6 pt-8 pb-12`}
         keyboardShouldPersistTaps="handled"
@@ -196,266 +165,128 @@ export default function ZakatCalculatorScreen() {
         <Animated.View style={{ opacity: fadeAnim }}>
           <Pressable
             onPress={() => router.replace("/home")}
-            style={tw`${rowDirection} items-center mb-9`}
+            style={tw.style("flex-row items-center mb-8", rowDirection)}
           >
-            <Text
-              style={[
-                tw`text-base text-[#174C3C]`,
-                isArabic ? tw`ml-2` : tw`mr-2`,
-              ]}
-            >
+            <Text style={[tw`text-base`, { color: colors.primary }, isArabic ? tw`ml-2` : tw`mr-2`]}>
               {isArabic ? "→" : "←"}
             </Text>
-
-            <Text
-              style={[tw`text-sm font-semibold text-[#174C3C]`, textDirection]}
-            >
+            <Text style={[tw`text-sm font-semibold`, { color: colors.primary }, textDirection]}>
               {t("calculator.back")}
             </Text>
           </Pressable>
 
-          <View style={tw`${rowDirection} items-center mb-4`}>
-            <View
-              style={[
-                tw`w-1.5 h-1.5 rounded-full bg-[#C59A55]`,
-                isArabic ? tw`ml-2` : tw`mr-2`,
-              ]}
-            />
-
-            <Text
-              style={[
-                tw`text-[11px] font-bold uppercase tracking-widest text-[#C59A55]`,
-                textDirection,
-              ]}
-            >
+          <View style={tw.style("flex-row items-center mb-3", rowDirection)}>
+            <View style={tw`w-1.5 h-1.5 rounded-full bg-[#C59A55] mr-2`} />
+            <Text style={[tw`text-[11px] font-bold uppercase tracking-widest text-[#C59A55]`, textDirection]}>
               {t("calculator.eyebrow")}
             </Text>
           </View>
 
-          <Text style={[tw`text-3xl font-bold text-[#174C3C]`, textDirection]}>
+          <Text style={[tw`text-3xl font-bold`, { color: colors.primary }, textDirection]}>
             {t("calculator.title")}
           </Text>
-
-          <Text
-            style={[
-              tw`text-sm leading-6 text-[#777D72] mt-3 mb-8`,
-              textDirection,
-            ]}
-          >
+          <Text style={[tw`text-sm leading-6 mt-3 mb-8`, { color: colors.secondaryText }, textDirection]}>
             {t("calculator.subtitle")}
           </Text>
 
-          <View style={tw`${rowDirection} items-center mb-4`}>
-            <Text
-              style={[
-                tw`text-xs font-bold uppercase tracking-widest text-[#C59A55]`,
-                isArabic ? tw`ml-3` : tw`mr-3`,
-              ]}
-            >
-              01
-            </Text>
-
-            <Text
-              style={[tw`text-base font-bold text-[#174C3C]`, textDirection]}
-            >
-              {t("calculator.sections.currency")}
-            </Text>
-          </View>
-
-          <View
-            style={tw`bg-white rounded-3xl p-5 border border-[#EAE8DF] mb-5`}
-          >
-            <View style={tw`flex-row bg-[#F7F5EF] rounded-xl p-1`}>
-              {["EGP", "USD"].map((item) => (
-                <Pressable
-                  key={item}
-                  onPress={() => {
-                    setCurrency(item);
-                    setResult(null);
-                  }}
-                  style={[
-                    tw`flex-1 py-3 rounded-lg items-center`,
-                    currency === item && tw`bg-[#174C3C]`,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      tw`text-sm font-bold`,
-                      {
-                        color: currency === item ? "#FFFFFF" : "#85897F",
-                      },
-                    ]}
-                  >
-                    {item}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          </View>
-
-          <View style={tw`${rowDirection} items-center mb-4`}>
-            <Text
-              style={[
-                tw`text-xs font-bold uppercase tracking-widest text-[#C59A55]`,
-                isArabic ? tw`ml-3` : tw`mr-3`,
-              ]}
-            >
-              02
-            </Text>
-
-            <Text
-              style={[tw`text-base font-bold text-[#174C3C]`, textDirection]}
-            >
-              {t("calculator.sections.goldKarat")}
-            </Text>
-          </View>
-
-          <View
-            style={tw`bg-white rounded-3xl p-5 border border-[#EAE8DF] mb-5`}
-          >
-            <View style={tw`flex-row gap-2`}>
-              {([18, 21, 22, 24] as const).map((karat) => (
-                <Pressable
-                  key={karat}
-                  onPress={() => {
-                    setGoldKarat(karat);
-                    setResult(null);
-                  }}
-                  style={[
-                    tw`flex-1 py-3 rounded-xl items-center border`,
-                    goldKarat === karat
-                      ? tw`bg-[#174C3C] border-[#174C3C]`
-                      : tw`bg-[#FAF9F5] border-[#E9E6DC]`,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      tw`text-sm font-bold`,
-                      goldKarat === karat ? tw`text-white` : tw`text-[#174C3C]`,
-                    ]}
-                  >
-                    {karat}K
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-
-            <View style={tw`${rowDirection} mt-4`}>
-              <View
-                style={[
-                  tw`w-1 rounded-full bg-[#C59A55]`,
-                  isArabic ? tw`ml-3` : tw`mr-3`,
-                ]}
-              />
-
-              <Text
-                style={[
-                  tw`flex-1 text-xs leading-5 text-[#85897F]`,
-                  textDirection,
-                ]}
-              >
-                {t("calculator.goldNote")}
-              </Text>
-            </View>
-          </View>
-
-          <View style={tw`${rowDirection} items-center mb-4`}>
-            <Text
-              style={[
-                tw`text-xs font-bold uppercase tracking-widest text-[#C59A55]`,
-                isArabic ? tw`ml-3` : tw`mr-3`,
-              ]}
-            >
-              03
-            </Text>
-
-            <Text style={[tw`text-xl font-bold text-[#174C3C]`, textDirection]}>
-              {t("calculator.sections.wealth")}
-            </Text>
-          </View>
-
-          <View style={tw`mb-5`}>
-            <View style={tw`bg-white rounded-3xl p-5 border border-[#EAE8DF]`}>
-              {fields.slice(0, 6).map((field) => {
-                const { key, ...fieldProps } = field;
-
+          <SectionHeader number="01" label={t("calculator.sections.currency")} isArabic={isArabic} color={colors.primary} />
+          <View style={cardStyle}>
+            <View style={[tw`flex-row rounded-xl p-1`, { backgroundColor: colors.surface }]}>
+              {["EGP", "USD"].map((item) => {
+                const selected = currency === item;
                 return (
-                  <FormField
-                    key={key}
-                    {...fieldProps}
-                    label={getFieldTranslation(key, "label")}
-                    hint={getFieldTranslation(key, "hint")}
-                    placeholder={getFieldTranslation(key, "placeholder")}
-                    currency={currency}
-                    value={values[key]}
-                    onChangeText={(value) => updateField(key, value)}
-                    isArabic={isArabic}
-                  />
+                  <Pressable
+                    key={item}
+                    onPress={() => {
+                      setCurrency(item);
+                      setResult(null);
+                    }}
+                    style={[
+                      tw`flex-1 py-3 rounded-lg items-center`,
+                      selected && selectedStyle,
+                    ]}
+                  >
+                    <Text style={[tw`text-sm font-bold`, { color: selected ? "#FFFFFF" : colors.secondaryText }]}>
+                      {item}
+                    </Text>
+                  </Pressable>
                 );
               })}
             </View>
           </View>
 
-          <View style={tw`mb-5`}>
-            <View style={tw`${rowDirection} items-center mb-4`}>
-              <Text
-                style={[
-                  tw`text-xs font-bold uppercase tracking-widest text-[#C59A55]`,
-                  isArabic ? tw`ml-3` : tw`mr-3`,
-                ]}
-              >
-                04
-              </Text>
-
-              <Text
-                style={[tw`text-xl font-bold text-[#174C3C]`, textDirection]}
-              >
-                {t("calculator.sections.liabilities")}
-              </Text>
+          <SectionHeader number="02" label={t("calculator.sections.goldKarat")} isArabic={isArabic} color={colors.primary} />
+          <View style={cardStyle}>
+            <View style={tw`flex-row gap-2`}>
+              {([18, 21, 22, 24] as const).map((karat) => {
+                const selected = goldKarat === karat;
+                return (
+                  <Pressable
+                    key={karat}
+                    onPress={() => {
+                      setGoldKarat(karat);
+                      setResult(null);
+                    }}
+                    style={[
+                      tw`flex-1 py-3 rounded-xl items-center border`,
+                      selected ? selectedStyle : unselectedStyle,
+                    ]}
+                  >
+                    <Text style={[tw`text-sm font-bold`, { color: selected ? "#FFFFFF" : colors.primary }]}>
+                      {karat}K
+                    </Text>
+                  </Pressable>
+                );
+              })}
             </View>
 
-            <View style={tw`bg-white rounded-3xl p-5 border border-[#EAE8DF]`}>
+            <View style={tw.style("flex-row mt-4", rowDirection)}>
+              <View style={[tw`w-1 rounded-full bg-[#C59A55]`, isArabic ? tw`ml-3` : tw`mr-3`]} />
+              <Text style={[tw`flex-1 text-xs leading-5`, { color: colors.secondaryText }, textDirection]}>
+                {t("calculator.goldNote")}
+              </Text>
+            </View>
+          </View>
+
+          <SectionHeader number="03" label={t("calculator.sections.wealth")} isArabic={isArabic} color={colors.primary} />
+          <View style={cardStyle}>
+            {fields.slice(0, 6).map(({ key, ...props }) => (
               <FormField
-                {...liabilitiesFieldProps}
-                label={getFieldTranslation("liabilities", "label")}
-                hint={getFieldTranslation("liabilities", "hint")}
-                placeholder={getFieldTranslation("liabilities", "placeholder")}
+                key={key}
+                {...props}
+                label={fieldText(key, "label")}
+                hint={fieldText(key, "hint")}
+                placeholder={fieldText(key, "placeholder")}
                 currency={currency}
-                value={values.liabilities}
-                onChangeText={(value) => updateField("liabilities", value)}
+                value={values[key]}
+                onChangeText={(value) => updateField(key, value)}
                 isArabic={isArabic}
               />
-            </View>
+            ))}
           </View>
 
-          <View style={tw`${rowDirection} items-center mb-2`}>
-            <Text
-              style={[
-                tw`text-xs font-bold uppercase tracking-widest text-[#C59A55]`,
-                isArabic ? tw`ml-3` : tw`mr-3`,
-              ]}
-            >
-              05
-            </Text>
-
-            <Text style={[tw`text-xl font-bold text-[#174C3C]`, textDirection]}>
-              {t("calculator.sections.nisab")}
-            </Text>
+          <SectionHeader number="04" label={t("calculator.sections.liabilities")} isArabic={isArabic} color={colors.primary} />
+          <View style={cardStyle}>
+            <FormField
+              {...liabilitiesProps}
+              label={fieldText("liabilities", "label")}
+              hint={fieldText("liabilities", "hint")}
+              placeholder={fieldText("liabilities", "placeholder")}
+              currency={currency}
+              value={values.liabilities}
+              onChangeText={(value) => updateField("liabilities", value)}
+              isArabic={isArabic}
+            />
           </View>
 
-          <View
-            style={tw`bg-white rounded-3xl p-5 border border-[#EAE8DF] mb-7`}
-          >
-            <Text
-              style={[tw`text-xs leading-5 text-[#85897F] mb-5`, textDirection]}
-            >
+          <SectionHeader number="05" label={t("calculator.sections.nisab")} isArabic={isArabic} color={colors.primary} />
+          <View style={cardStyle}>
+            <Text style={[tw`text-xs leading-5 mb-5`, { color: colors.secondaryText }, textDirection]}>
               {t("calculator.nisabDescription")}
             </Text>
-
             <View style={tw`flex-row gap-3`}>
               {(["gold", "silver"] as const).map((standard) => {
                 const selected = nisabStandard === standard;
-
                 return (
                   <Pressable
                     key={standard}
@@ -465,19 +296,10 @@ export default function ZakatCalculatorScreen() {
                     }}
                     style={[
                       tw`flex-1 rounded-xl py-3.5 items-center border`,
-                      selected
-                        ? tw`bg-[#174C3C] border-[#174C3C]`
-                        : tw`bg-[#FAF9F5] border-[#E9E6DC]`,
+                      selected ? selectedStyle : unselectedStyle,
                     ]}
                   >
-                    <Text
-                      style={[
-                        tw`text-sm font-bold capitalize`,
-                        {
-                          color: selected ? "#FFFFFF" : "#174C3C",
-                        },
-                      ]}
-                    >
+                    <Text style={[tw`text-sm font-bold capitalize`, { color: selected ? "#FFFFFF" : colors.primary }]}>
                       {t(`calculator.nisabOptions.${standard}`)}
                     </Text>
                   </Pressable>
@@ -498,167 +320,100 @@ export default function ZakatCalculatorScreen() {
             {loading ? (
               <View style={tw`flex-row items-center gap-2`}>
                 <ActivityIndicator color="#FFFFFF" />
-                <Text style={tw`text-white font-semibold`}>
-                  {t("calculator.calculating")}
-                </Text>
+                <Text style={tw`text-white font-semibold`}>{t("calculator.calculating")}</Text>
               </View>
             ) : (
-              <Text style={tw`text-white font-bold text-base`}>
-                {t("calculator.calculate")} →
-              </Text>
+              <Text style={tw`text-white font-bold text-base`}>{t("calculator.calculate")} →</Text>
             )}
           </Pressable>
 
           {result && (
-            <View style={tw`bg-white rounded-3xl p-5 border border-[#EAE8DF]`}>
-              <View style={tw`${rowDirection} items-center mb-5`}>
-                <View
-                  style={[
-                    tw`w-1.5 h-1.5 rounded-full bg-[#C59A55]`,
-                    isArabic ? tw`ml-2` : tw`mr-2`,
-                  ]}
-                />
-
-                <Text
-                  style={[
-                    tw`text-[11px] font-bold uppercase tracking-widest text-[#C59A55]`,
-                    textDirection,
-                  ]}
-                >
+            <View style={[tw`rounded-3xl p-5 border`, { backgroundColor: colors.card, borderColor: colors.border }]}>
+              <View style={tw.style("flex-row items-center mb-5", rowDirection)}>
+                <View style={tw`w-1.5 h-1.5 rounded-full bg-[#C59A55] mr-2`} />
+                <Text style={[tw`text-[11px] font-bold uppercase tracking-widest text-[#C59A55]`, textDirection]}>
                   {t("calculator.result.eyebrow")}
                 </Text>
               </View>
 
-              <Text style={[tw`text-sm text-[#85897F]`, textDirection]}>
+              <Text style={[tw`text-sm`, { color: colors.secondaryText }, textDirection]}>
                 {t("calculator.result.zakatDue")}
               </Text>
-
-              <Text
-                style={[
-                  tw`text-3xl font-bold text-[#174C3C] mt-2`,
-                  {
-                    writingDirection: "ltr",
-                    textAlign: isArabic ? "right" : "left",
-                  },
-                ]}
-              >
+              <Text style={[tw`text-3xl font-bold mt-2`, { color: colors.primary, writingDirection: "ltr" }, { textAlign: isArabic ? "right" : "left" }]}>
                 {formatMoney(result.zakat_due, currency)}
               </Text>
 
               <View
                 style={[
                   tw`rounded-2xl p-4 mt-5`,
-                  result.above_nisab ? tw`bg-[#E8EEE5]` : tw`bg-[#F4E9D3]`,
+                  { backgroundColor: result.above_nisab ? (isDarkMode ? "#263C30" : "#E8EEE5") : (isDarkMode ? "#3B3224" : "#F4E9D3") },
                 ]}
               >
-                <Text
-                  style={[tw`text-sm font-bold text-[#174C3C]`, textDirection]}
-                >
-                  {t(
-                    result.above_nisab
-                      ? "calculator.result.aboveNisab"
-                      : "calculator.result.belowNisab",
-                  )}
+                <Text style={[tw`text-sm font-bold`, { color: result.above_nisab ? colors.primary : (isDarkMode ? "#D9BD83" : "#80602F") }, textDirection]}>
+                  {t(result.above_nisab ? "calculator.result.aboveNisab" : "calculator.result.belowNisab")}
                 </Text>
-
-                <Text
-                  style={[
-                    tw`text-xs leading-5 text-[#52744D] mt-2`,
-                    textDirection,
-                  ]}
-                >
+                <Text style={[tw`text-xs leading-5 mt-2`, { color: colors.secondaryText }, textDirection]}>
                   {translatedNote}
                 </Text>
               </View>
 
-              <View style={tw`h-px bg-[#EAE8DF] my-6`} />
-
-              <Text
-                style={[
-                  tw`text-lg font-bold text-[#174C3C] mb-5`,
-                  textDirection,
-                ]}
-              >
+              <View style={[tw`my-6 h-px`, { backgroundColor: colors.border }]} />
+              <Text style={[tw`text-lg font-bold mb-5`, { color: colors.primary }, textDirection]}>
                 {t("calculator.result.breakdown")}
               </Text>
 
-              {breakdownKeys.map((key, index) => (
-                <View
-                  key={key}
-                  style={tw`${rowDirection} justify-between items-center py-3 border-b border-[#F0EEE7]`}
-                >
-                  <Text
-                    style={[
-                      tw`text-xs flex-1`,
-                      isArabic ? tw`ml-3` : tw`mr-3`,
-                      {
-                        textAlign: isArabic ? "right" : "left",
-                        color: index === 8 ? "#174C3C" : "#777D72",
-                        fontWeight: index === 8 ? "700" : "400",
-                      },
-                    ]}
-                  >
-                    {t(`calculator.result.breakdownItems.${key}`)}
-                  </Text>
+              {breakdownKeys.map((key, index) => {
+                const amount = [
+                  result.breakdown.cash,
+                  result.breakdown.gold_value,
+                  result.breakdown.silver_value,
+                  result.breakdown.stocks,
+                  result.breakdown.business_goods,
+                  result.breakdown.other_investments,
+                  result.breakdown.gross_wealth,
+                  result.breakdown.liabilities,
+                  result.breakdown.net_zakatable_wealth,
+                ][index];
 
-                  <Text
-                    style={[
-                      tw`text-xs`,
-                      {
-                        color: "#174C3C",
-                        fontWeight: index === 8 ? "700" : "600",
-                        writingDirection: "ltr",
-                      },
-                    ]}
+                return (
+                  <View
+                    key={key}
+                    style={tw.style("flex-row justify-between items-center py-3 border-b", rowDirection, {
+                      borderBottomColor: colors.border,
+                    })}
                   >
-                    {formatMoney(Number(breakdownItems[index]), currency)}
-                  </Text>
-                </View>
-              ))}
+                    <Text
+                      style={[
+                        tw`text-xs flex-1`,
+                        isArabic ? tw`ml-3` : tw`mr-3`,
+                        { textAlign: isArabic ? "right" : "left", color: index === 8 ? colors.primary : colors.secondaryText, fontWeight: index === 8 ? "700" : "400" },
+                      ]}
+                    >
+                      {t(`calculator.result.breakdownItems.${key}`)}
+                    </Text>
+                    <Text style={[tw`text-xs`, { color: colors.primary, fontWeight: index === 8 ? "700" : "600", writingDirection: "ltr" }]}>
+                      {formatMoney(Number(amount), currency)}
+                    </Text>
+                  </View>
+                );
+              })}
 
               <View style={tw`mt-6`}>
-                <Text
-                  style={[
-                    tw`text-base font-bold text-[#174C3C] mb-3`,
-                    textDirection,
-                  ]}
-                >
+                <Text style={[tw`text-base font-bold mb-3`, { color: colors.primary }, textDirection]}>
                   {t("calculator.result.pricesUsed")}
                 </Text>
-
-                <View style={tw`bg-[#FAF9F5] rounded-2xl p-4`}>
-                  <Text
-                    style={[
-                      tw`text-xs leading-6 text-[#777D72]`,
-                      textDirection,
-                    ]}
-                  >
-                    {t("calculator.result.gold")}:{" "}
-                    {formatMoney(
-                      result.prices_used.gold_price_per_gram,
-                      currency,
-                    )}{" "}
-                    / {t("calculator.result.perGram")}
+                <View style={[tw`rounded-2xl p-4`, { backgroundColor: colors.surface }]}>
+                  <Text style={secondaryText}>
+                    {t("calculator.result.gold")}: {formatMoney(result.prices_used.gold_price_per_gram, currency)} / {t("calculator.result.perGram")}
                     {"\n"}
-                    {t("calculator.result.silver")}:{" "}
-                    {formatMoney(
-                      result.prices_used.silver_price_per_gram,
-                      currency,
-                    )}{" "}
-                    / {t("calculator.result.perGram")}
+                    {t("calculator.result.silver")}: {formatMoney(result.prices_used.silver_price_per_gram, currency)} / {t("calculator.result.perGram")}
                     {"\n"}
-                    {t("calculator.result.updated")}:{" "}
-                    {formatDate(result.prices_used.as_of, i18n.language)}
+                    {t("calculator.result.updated")}: {formatDate(result.prices_used.as_of, i18n.language)}
                   </Text>
 
                   {result.prices_used.is_fallback && (
-                    <View style={tw`mt-3 bg-[#F4E9D3] rounded-xl p-3`}>
-                      <Text
-                        style={[
-                          tw`text-xs font-semibold text-[#8C682F]`,
-                          textDirection,
-                        ]}
-                      >
+                    <View style={[tw`mt-3 rounded-xl p-3`, { backgroundColor: isDarkMode ? "#3B3224" : "#F4E9D3" }]}>
+                      <Text style={[tw`text-xs font-semibold`, { color: isDarkMode ? "#D9BD83" : "#8C682F" }, textDirection]}>
                         {t("calculator.result.fallbackWarning")}
                       </Text>
                     </View>
@@ -668,7 +423,7 @@ export default function ZakatCalculatorScreen() {
             </View>
           )}
 
-          <Text style={tw`text-xs text-center text-[#85897F] mt-8`}>
+          <Text style={[tw`text-xs text-center mt-8`, { color: colors.secondaryText }]}>
             {t("calculator.result.footer")}
           </Text>
         </Animated.View>

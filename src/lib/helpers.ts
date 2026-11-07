@@ -12,6 +12,9 @@ export const formatDate = (date: string, language = "en") => {
       day: "numeric",
       month: "short",
       year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
     },
   ).format(new Date(date));
 };

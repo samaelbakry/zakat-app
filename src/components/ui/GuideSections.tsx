@@ -1,33 +1,37 @@
-
+import { useTheme } from "@/context/ThemeContext";
 import { View, Text } from "react-native";
 import tw from "twrnc";
+
+type GuideSectionProps = {
+  title: string;
+  items?: string[];
+  description?: string;
+  isArabic?: boolean;
+};
 
 export default function GuideSection({
   title,
   items,
   description,
   isArabic = false,
-}: {
-  title: string;
-  items?: string[];
-  description?: string;
-  isArabic?: boolean;
-}) {
+}: GuideSectionProps) {
+  const { colors, isDarkMode } = useTheme();
+
   const textDirection = {
-    writingDirection: isArabic ? "rtl" as const : "ltr" as const,
-    textAlign: isArabic ? "right" as const : "left" as const,
+    writingDirection: isArabic ? ("rtl" as const) : ("ltr" as const),
+    textAlign: isArabic ? ("right" as const) : ("left" as const),
     letterSpacing: isArabic ? 0 : undefined,
   };
+
+  const rowDirection = isArabic ? "flex-row-reverse" : "flex-row";
 
   return (
     <View style={tw`mb-7`}>
       <Text
         style={[
-          tw`font-display text-xl text-[#174C3C] mb-3`,
-          {
-            textAlign: "right",
-            writingDirection: isArabic ? "rtl" : "ltr",
-          },
+          tw`font-display text-xl mb-3`,
+          textDirection,
+          { color: colors.primary },
         ]}
       >
         {title}
@@ -36,8 +40,9 @@ export default function GuideSection({
       {description && (
         <Text
           style={[
-            tw`text-sm leading-6 text-[#777D72] mb-3`,
+            tw`text-sm leading-6 mb-3`,
             textDirection,
+            { color: colors.secondaryText },
           ]}
         >
           {description}
@@ -47,17 +52,12 @@ export default function GuideSection({
       {items?.map((item, index) => (
         <View
           key={`${title}-${index}`}
-          style={[
-            tw`flex-row mb-3`,
-            isArabic ? tw`flex-row-reverse` : tw`flex-row`,
-          ]}
+          style={tw.style("mb-3", rowDirection)}
         >
           <Text
             style={[
-              tw`text-[#A77A35]`,
-              isArabic
-                ? { marginLeft: 12 }
-                : { marginRight: 12 },
+              { color: isDarkMode ? "#D9BD83" : "#A77A35" },
+              isArabic ? { marginLeft: 12 } : { marginRight: 12 },
             ]}
           >
             •
@@ -65,8 +65,9 @@ export default function GuideSection({
 
           <Text
             style={[
-              tw`flex-1 text-sm leading-6 text-[#5F6B60]`,
+              tw`flex-1 text-sm leading-6`,
               textDirection,
+              { color: colors.text },
             ]}
           >
             {item}

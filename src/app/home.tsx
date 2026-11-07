@@ -194,7 +194,7 @@ export default function HomeScreen() {
                   <Text
                     style={[
                       tw`text-xs mt-1`,
-                      { color: isDarkMode ? colors.text : "#DCE5D5" },
+                      { color: isDarkMode ? colors.background : "#DCE5D5" },
                     ]}
                   >
                     {t("home.market.subtitle")}
@@ -221,7 +221,7 @@ export default function HomeScreen() {
               <Text
                 style={[
                   tw`text-xs mt-4`,
-                  { color: isDarkMode ? colors.secondaryText : "#DCE5D5" },
+                  { color: isDarkMode ? colors.background : "#DCE5D5" },
                   textStyle,
                 ]}
               >
@@ -232,7 +232,7 @@ export default function HomeScreen() {
               <Text
                 style={[
                   tw`text-xs leading-5 mt-2`,
-                  { color: isDarkMode ? colors.secondaryText : "#DCE5D5" },
+                  { color: isDarkMode ? colors.background : "#DCE5D5" },
                   tw`${textAlign}`,
                   textStyle,
                 ]}
