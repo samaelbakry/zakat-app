@@ -1,19 +1,25 @@
 import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { ThemeProvider, useTheme } from "@/context/ThemeContext";
+import Sidebar from "@/components/ui/Sidebar";
+import SidebarTrigger from "@/components/ui/SidebarTrigger";
+import SplashScreen from "@/components/ui/SplashScreen";
+
 import { Stack } from "expo-router";
 import { View } from "react-native";
 import tw from "twrnc";
+
 import "../localization/i18n";
-import LanguageSwitcher from "@/components/home/LanguageSwitcher";
-import SplashScreen from "@/components/ui/SplashScreen";
 import { useEffect, useState } from "react";
-import { ThemeProvider } from "@/context/ThemeContext";
 
 function RootNavigator() {
   const { session, loading } = useAuth();
   const [splash, setSplash] = useState(true);
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+  const { colors } = useTheme();
 
   useEffect(() => {
     if (loading) return;
+
     const timer = setTimeout(() => {
       setSplash(false);
     }, 1000);
@@ -28,7 +34,7 @@ function RootNavigator() {
   const isAuthenticated = session !== null;
 
   return (
-    <View style={tw`flex-1`}>
+    <View style={tw`flex-1 background-${colors.background}`}>
       <Stack
         screenOptions={{
           headerShown: false,
@@ -46,7 +52,16 @@ function RootNavigator() {
         </Stack.Protected>
       </Stack>
 
-      <LanguageSwitcher />
+      {isAuthenticated && (
+        <>
+          <SidebarTrigger onPress={() => setSidebarVisible((prev) => !prev)} />
+
+          <Sidebar
+            visible={sidebarVisible}
+            onClose={() => setSidebarVisible(false)}
+          />
+        </>
+      )}
     </View>
   );
 }
@@ -54,9 +69,9 @@ function RootNavigator() {
 export default function RootLayout() {
   return (
     <ThemeProvider>
-    <AuthProvider>
-      <RootNavigator />
-    </AuthProvider>
+      <AuthProvider>
+        <RootNavigator />
+      </AuthProvider>
     </ThemeProvider>
   );
 }

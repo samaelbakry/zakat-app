@@ -1,6 +1,3 @@
-import LogoutButton from "@/components/auth/LogoutButton";
-import ThemeToggle from "@/components/ui/ThemeToggle";
-
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { formatCurrency, formatDate } from "@/lib/helpers";
@@ -138,10 +135,6 @@ export default function HomeScreen() {
           >
             {t("home.welcome")}
           </Text>
-        </View>
-
-        <View style={tw`mb-5`}>
-          <ThemeToggle />
         </View>
 
         {loading ? (
@@ -367,9 +360,6 @@ export default function HomeScreen() {
           </>
         )}
 
-        <View style={[tw`pt-4 border-t`, { borderColor: colors.border }]}>
-          <LogoutButton />
-        </View>
       </ScrollView>
     </View>
   );
