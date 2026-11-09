@@ -1,3 +1,4 @@
+import SmartInsights from "@/components/home/SmartInsights";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { formatCurrency, formatDate } from "@/lib/helpers";
@@ -41,9 +42,7 @@ export default function HomeScreen() {
   };
 
   const firstName =
-    user?.user_metadata?.first_name ||
-    user?.email?.split("@")[0] ||
-    "there";
+    user?.user_metadata?.first_name || user?.email?.split("@")[0] || "there";
 
   const loadHomeData = useCallback(async () => {
     setLoading(true);
@@ -66,25 +65,12 @@ export default function HomeScreen() {
   );
 
   const Label = ({ children }: { children: React.ReactNode }) => (
-    <Text
-      style={[
-        tw`text-sm`,
-        secondaryText,
-        tw`${textAlign}`,
-        textStyle,
-      ]}
-    >
+    <Text style={[tw`text-sm`, secondaryText, tw`${textAlign}`, textStyle]}>
       {children}
     </Text>
   );
 
-  const PriceCard = ({
-    title,
-    value,
-  }: {
-    title: string;
-    value: number;
-  }) => (
+  const PriceCard = ({ title, value }: { title: string; value: number }) => (
     <View
       style={[
         tw`flex-1 rounded-2xl p-4`,
@@ -104,7 +90,7 @@ export default function HomeScreen() {
   );
 
   return (
-    <View style={[tw`flex-1`, { backgroundColor: colors.background }]}>
+    <View style={[tw`flex-1`, { backgroundColor: colors.background}]}>
       <ScrollView
         contentContainerStyle={tw`px-5 pt-8 pb-10`}
         showsVerticalScrollIndicator={false}
@@ -141,9 +127,7 @@ export default function HomeScreen() {
           <View style={tw`py-16 items-center`}>
             <ActivityIndicator color={colors.primary} />
 
-            <Text style={[tw`mt-3`, secondaryText]}>
-              {t("home.loading")}
-            </Text>
+            <Text style={[tw`mt-3`, secondaryText]}>{t("home.loading")}</Text>
           </View>
         ) : error || !prices ? (
           <View style={[tw`rounded-3xl p-5 border`, card]}>
@@ -166,19 +150,15 @@ export default function HomeScreen() {
             <View
               style={[
                 tw`rounded-3xl p-5 mb-6`,
-                { backgroundColor: colors.primary },
+                { backgroundColor: colors.card, borderColor: colors.border , borderWidth: 1},
               ]}
             >
-              <View
-                style={[
-                  tw`${row} justify-between items-center mb-4`,
-                ]}
-              >
+              <View style={[tw`${row} justify-between items-center mb-4`]}>
                 <View style={tw`flex-1`}>
                   <Text
                     style={[
                       tw`text-xs font-bold`,
-                      { color: isDarkMode ? colors.accent : "#E4D0A5" },
+                      { color: isDarkMode ? colors.accent : "#C59A55" },
                     ]}
                   >
                     {t("home.market.title")}
@@ -187,7 +167,7 @@ export default function HomeScreen() {
                   <Text
                     style={[
                       tw`text-xs mt-1`,
-                      { color: isDarkMode ? colors.background : "#DCE5D5" },
+                      { color: isDarkMode ? colors.primary : "#999B90" },
                     ]}
                   >
                     {t("home.market.subtitle")}
@@ -214,7 +194,7 @@ export default function HomeScreen() {
               <Text
                 style={[
                   tw`text-xs mt-4`,
-                  { color: isDarkMode ? colors.background : "#DCE5D5" },
+                  { color: isDarkMode ? colors.primary : "#999B90" },
                   textStyle,
                 ]}
               >
@@ -225,7 +205,7 @@ export default function HomeScreen() {
               <Text
                 style={[
                   tw`text-xs leading-5 mt-2`,
-                  { color: isDarkMode ? colors.background : "#DCE5D5" },
+                  { color: isDarkMode ? colors.primary : "#999B90" },
                   tw`${textAlign}`,
                   textStyle,
                 ]}
@@ -233,6 +213,9 @@ export default function HomeScreen() {
                 {t("home.market.disclaimer")}
               </Text>
             </View>
+            <SmartInsights
+              currency={prices.currency === "USD" ? "USD" : "EGP"}
+            />
 
             <Text style={[tw`text-xs font-bold mb-3`, accentText]}>
               {t("home.essentials")}
@@ -284,12 +267,7 @@ export default function HomeScreen() {
                     {item.title} ({item.grams}g)
                   </Text>
 
-                  <Text
-                    style={[
-                      tw`text-lg font-bold mt-2`,
-                      primaryText,
-                    ]}
-                  >
+                  <Text style={[tw`text-lg font-bold mt-2`, primaryText]}>
                     {formatCurrency(item.value, prices.currency)}
                   </Text>
                 </View>
@@ -329,37 +307,8 @@ export default function HomeScreen() {
                 {isArabic ? "←" : "→"}
               </Text>
             </Pressable>
-
-            <Pressable
-              onPress={() => router.push("/zakat-calculation")}
-              style={({ pressed }) => [
-                tw`rounded-3xl p-5 mb-6 ${row} items-center`,
-                { backgroundColor: colors.primary },
-                pressed && { opacity: 0.85 },
-              ]}
-            >
-              <View style={tw`flex-1`}>
-                <Text style={tw`text-base font-bold text-white`}>
-                  {t("home.calculator.title")}
-                </Text>
-
-                <Text
-                  style={[
-                    tw`text-sm mt-2`,
-                    { color: isDarkMode ? colors.text : "#DCE5D5" },
-                  ]}
-                >
-                  {t("home.calculator.description")}
-                </Text>
-              </View>
-
-              <Text style={[tw`text-lg`, accentText]}>
-                {isArabic ? "←" : "→"}
-              </Text>
-            </Pressable>
           </>
         )}
-
       </ScrollView>
     </View>
   );
