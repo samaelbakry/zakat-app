@@ -1,3 +1,4 @@
+
 import SmartInsights from "@/components/home/SmartInsights";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
@@ -28,21 +29,33 @@ export default function HomeScreen() {
   const [error, setError] = useState(false);
 
   const isArabic = i18n.language.startsWith("ar");
-  const direction = isArabic ? "rtl" : "ltr";
-  const textAlign = isArabic ? "text-right" : "text-left";
-  const row = isArabic ? "flex-row-reverse" : "flex-row";
 
-  const textStyle = { writingDirection: direction } as const;
+  const textAlign = isArabic ? "right" : "left";
+  const writingDirection = isArabic ? "rtl" : "ltr";
+
+  const rowStyle = {
+    flexDirection: isArabic ? "row-reverse" : "row",
+  } as const;
+
+  const textDirection = {
+    writingDirection,
+    textAlign,
+  } as const;
+
   const primaryText = { color: colors.primary };
   const secondaryText = { color: colors.secondaryText };
   const accentText = { color: colors.accent };
+
   const card = {
     backgroundColor: colors.card,
     borderColor: colors.border,
+    borderWidth: 1,
   };
 
   const firstName =
-    user?.user_metadata?.first_name || user?.email?.split("@")[0] || "there";
+    user?.user_metadata?.first_name ||
+    user?.email?.split("@")[0] ||
+    "there";
 
   const loadHomeData = useCallback(async () => {
     setLoading(true);
@@ -65,12 +78,24 @@ export default function HomeScreen() {
   );
 
   const Label = ({ children }: { children: React.ReactNode }) => (
-    <Text style={[tw`text-sm`, secondaryText, tw`${textAlign}`, textStyle]}>
+    <Text
+      style={[
+        tw`text-sm`,
+        secondaryText,
+        textDirection,
+      ]}
+    >
       {children}
     </Text>
   );
 
-  const PriceCard = ({ title, value }: { title: string; value: number }) => (
+  const PriceCard = ({
+    title,
+    value,
+  }: {
+    title: string;
+    value: number;
+  }) => (
     <View
       style={[
         tw`flex-1 rounded-2xl p-4`,
@@ -79,24 +104,42 @@ export default function HomeScreen() {
     >
       <Label>{title}</Label>
 
-      <Text style={[tw`text-base font-bold mt-2`, primaryText]}>
+      <Text
+        style={[
+          tw`text-base font-bold mt-2`,
+          primaryText,
+          { textAlign: "left", writingDirection: "ltr" },
+        ]}
+      >
         {formatCurrency(value, prices!.currency)}
       </Text>
 
-      <Text style={[tw`text-xs mt-2`, accentText]}>
+      <Text
+        style={[
+          tw`text-xs mt-2`,
+          accentText,
+          textDirection,
+        ]}
+      >
         {t("home.market.perGram")}
       </Text>
     </View>
   );
 
   return (
-    <View style={[tw`flex-1`, { backgroundColor: colors.background}]}>
+    <View style={[tw`flex-1`, { backgroundColor: colors.background }]}>
       <ScrollView
         contentContainerStyle={tw`px-5 pt-8 pb-10`}
         showsVerticalScrollIndicator={false}
       >
-        <View style={tw`mt-6 mb-6`}>
-          <Text style={[tw`text-xs font-bold mb-3`, accentText]}>
+        <View style={tw`my-6`}>
+          <Text
+            style={[
+              tw`text-xs font-bold mb-3`,
+              accentText,
+              textDirection,
+            ]}
+          >
             {t("home.personalSpace")}
           </Text>
 
@@ -104,8 +147,7 @@ export default function HomeScreen() {
             style={[
               tw`text-2xl font-bold`,
               primaryText,
-              tw`${textAlign}`,
-              textStyle,
+              textDirection,
             ]}
           >
             {t("home.greeting")} {firstName}
@@ -115,8 +157,7 @@ export default function HomeScreen() {
             style={[
               tw`text-sm mt-2`,
               secondaryText,
-              tw`${textAlign}`,
-              textStyle,
+              textDirection,
             ]}
           >
             {t("home.welcome")}
@@ -127,20 +168,43 @@ export default function HomeScreen() {
           <View style={tw`py-16 items-center`}>
             <ActivityIndicator color={colors.primary} />
 
-            <Text style={[tw`mt-3`, secondaryText]}>{t("home.loading")}</Text>
+            <Text style={[tw`mt-3`, secondaryText]}>
+              {t("home.loading")}
+            </Text>
           </View>
         ) : error || !prices ? (
           <View style={[tw`rounded-3xl p-5 border`, card]}>
-            <Text style={[tw`font-bold text-base`, primaryText]}>
+            <Text
+              style={[
+                tw`font-bold text-base`,
+                primaryText,
+                textDirection,
+              ]}
+            >
               {t("home.error.title")}
             </Text>
 
-            <Text style={[tw`mt-2`, secondaryText]}>
+            <Text
+              style={[
+                tw`mt-2`,
+                secondaryText,
+                textDirection,
+              ]}
+            >
               {t("home.error.description")}
             </Text>
 
-            <Pressable onPress={() => void loadHomeData()}>
-              <Text style={[tw`mt-4 font-bold`, accentText]}>
+            <Pressable
+              onPress={() => void loadHomeData()}
+              style={rowStyle}
+            >
+              <Text
+                style={[
+                  tw`mt-4 font-bold`,
+                  accentText,
+                  textDirection,
+                ]}
+              >
                 {t("home.error.retry")}
               </Text>
             </Pressable>
@@ -150,15 +214,25 @@ export default function HomeScreen() {
             <View
               style={[
                 tw`rounded-3xl p-5 mb-6`,
-                { backgroundColor: colors.card, borderColor: colors.border , borderWidth: 1},
+                card,
               ]}
             >
-              <View style={[tw`${row} justify-between items-center mb-4`]}>
+              <View
+                style={[
+                  tw`justify-between items-center mb-4`,
+                  rowStyle,
+                ]}
+              >
                 <View style={tw`flex-1`}>
                   <Text
                     style={[
                       tw`text-xs font-bold`,
-                      { color: isDarkMode ? colors.accent : "#C59A55" },
+                      {
+                        color: isDarkMode
+                          ? colors.accent
+                          : "#C59A55",
+                      },
+                      textDirection,
                     ]}
                   >
                     {t("home.market.title")}
@@ -167,19 +241,29 @@ export default function HomeScreen() {
                   <Text
                     style={[
                       tw`text-xs mt-1`,
-                      { color: isDarkMode ? colors.primary : "#999B90" },
+                      {
+                        color: isDarkMode
+                          ? colors.primary
+                          : "#999B90",
+                      },
+                      textDirection,
                     ]}
                   >
                     {t("home.market.subtitle")}
                   </Text>
                 </View>
 
-                <Text style={[tw`font-bold`, accentText]}>
+                <Text
+                  style={[
+                    tw`font-bold`,
+                    accentText,
+                  ]}
+                >
                   {prices.currency}
                 </Text>
               </View>
 
-              <View style={tw`${row} gap-3`}>
+              <View style={[tw`gap-3`, rowStyle]}>
                 <PriceCard
                   title={t("home.market.gold")}
                   value={prices.gold_price_per_gram}
@@ -194,8 +278,12 @@ export default function HomeScreen() {
               <Text
                 style={[
                   tw`text-xs mt-4`,
-                  { color: isDarkMode ? colors.primary : "#999B90" },
-                  textStyle,
+                  {
+                    color: isDarkMode
+                      ? colors.primary
+                      : "#999B90",
+                  },
+                  textDirection,
                 ]}
               >
                 {t("home.market.updated")}{" "}
@@ -205,29 +293,43 @@ export default function HomeScreen() {
               <Text
                 style={[
                   tw`text-xs leading-5 mt-2`,
-                  { color: isDarkMode ? colors.primary : "#999B90" },
-                  tw`${textAlign}`,
-                  textStyle,
+                  {
+                    color: isDarkMode
+                      ? colors.primary
+                      : "#999B90",
+                  },
+                  textDirection,
                 ]}
               >
                 {t("home.market.disclaimer")}
               </Text>
             </View>
+
             <SmartInsights
               currency={prices.currency === "USD" ? "USD" : "EGP"}
             />
 
-            <Text style={[tw`text-xs font-bold mb-3`, accentText]}>
+            <Text
+              style={[
+                tw`text-xs font-bold mb-3`,
+                accentText,
+                textDirection,
+              ]}
+            >
               {t("home.essentials")}
             </Text>
 
-            <View style={[tw`rounded-3xl p-5 mb-6 border`, card]}>
+            <View
+              style={[
+                tw`rounded-3xl p-5 mb-6`,
+                card,
+              ]}
+            >
               <Text
                 style={[
                   tw`text-xl font-bold mb-2`,
                   primaryText,
-                  tw`${textAlign}`,
-                  textStyle,
+                  textDirection,
                 ]}
               >
                 {t("home.nisab.title")}
@@ -237,8 +339,7 @@ export default function HomeScreen() {
                 style={[
                   tw`text-sm mb-4`,
                   secondaryText,
-                  tw`${textAlign}`,
-                  textStyle,
+                  textDirection,
                 ]}
               >
                 {t("home.nisab.description")}
@@ -263,11 +364,26 @@ export default function HomeScreen() {
                     { backgroundColor: colors.surface },
                   ]}
                 >
-                  <Text style={[tw`text-xs`, secondaryText]}>
+                  <Text
+                    style={[
+                      tw`text-xs`,
+                      secondaryText,
+                      textDirection,
+                    ]}
+                  >
                     {item.title} ({item.grams}g)
                   </Text>
 
-                  <Text style={[tw`text-lg font-bold mt-2`, primaryText]}>
+                  <Text
+                    style={[
+                      tw`text-lg font-bold mt-2`,
+                      primaryText,
+                      {
+                        textAlign: "left",
+                        writingDirection: "ltr",
+                      },
+                    ]}
+                  >
                     {formatCurrency(item.value, prices.currency)}
                   </Text>
                 </View>
@@ -277,8 +393,7 @@ export default function HomeScreen() {
                 style={[
                   tw`text-xs leading-5`,
                   secondaryText,
-                  tw`${textAlign}`,
-                  textStyle,
+                  textDirection,
                 ]}
               >
                 {t("home.nisab.note")}
@@ -288,17 +403,30 @@ export default function HomeScreen() {
             <Pressable
               onPress={() => router.push("/zakat-guide")}
               style={({ pressed }) => [
-                tw`rounded-2xl p-5 mb-4 ${row} items-center`,
+                tw`rounded-2xl p-5 mb-4 items-center`,
+                rowStyle,
                 { backgroundColor: colors.surface },
                 pressed && { opacity: 0.8 },
               ]}
             >
               <View style={tw`flex-1`}>
-                <Text style={[tw`font-bold`, primaryText]}>
+                <Text
+                  style={[
+                    tw`font-bold`,
+                    primaryText,
+                    textDirection,
+                  ]}
+                >
                   {t("home.guide.title")}
                 </Text>
 
-                <Text style={[tw`text-sm mt-1`, secondaryText]}>
+                <Text
+                  style={[
+                    tw`text-sm mt-1`,
+                    secondaryText,
+                    textDirection,
+                  ]}
+                >
                   {t("home.guide.description")}
                 </Text>
               </View>

@@ -313,5 +313,26 @@
       "aboveNisab": "Your net wealth meets or exceeds the Nisab threshold ({{value}}). Zakat is due.",
       "belowNisab": "Net wealth is below the Nisab threshold ({{value}}). No Zakat is due."
     }
+  },
+  "smartInsights": {
+    "sectionTitle": "Quick calculation",
+    "title": "Quick Zakat Estimate",
+    "description": "Get a quick estimate of your zakat.",
+    "money": "Money",
+    "gold": "Gold",
+    "grams": "grams",
+    "goldPurity": "Gold purity",
+    "currentGoldPrice": "Current gold price",
+    "estimatedZakat": "Estimated Zakat",
+    "totalAssets": "Total assets",
+    "nisabReached": "Assets reached Nisab",
+    "belowNisab": "Below Nisab",
+    "nisabValue": "Nisab value",
+    "goldEquivalent": "Gold equivalent",
+    "calculateDetails": "Calculate Zakat in Detail",
+    "disclaimer": "This is a quick estimate. Zakat eligibility depends on nisab and other conditions.",
+    "loadingPrice": "Loading price...",
+    "goldPriceUnit": "/g"
   }
+
 }

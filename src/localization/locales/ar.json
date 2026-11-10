@@ -313,5 +313,26 @@
       "aboveNisab": "صافي ثروتك يساوي أو يتجاوز حد النصاب ({{value}}). الزكاة واجبة.",
       "belowNisab": "صافي ثروتك أقل من حد النصاب ({{value}}). لا تجب عليك الزكاة."
     }
+  },
+  "smartInsights": {
+    "sectionTitle": "حساب سريع",
+    "title": "تقدير الزكاة السريع",
+    "description": "احصل على تقدير سريع لقيمة الزكاة المستحقة.",
+    "money": "الأموال",
+    "gold": "الذهب",
+    "grams": "جرام",
+    "goldPurity": "عيار الذهب",
+    "currentGoldPrice": "سعر الذهب الحالي",
+    "estimatedZakat": "الزكاة التقديرية",
+    "totalAssets": "إجمالي الأصول",
+    "nisabReached": "تم بلوغ النصاب",
+    "belowNisab": "الأصول أقل من النصاب",
+    "nisabValue": "قيمة النصاب",
+    "goldEquivalent": "ما يعادل الذهب",
+    "calculateDetails": "احسب الزكاة بالتفصيل",
+    "disclaimer": "هذا تقدير مبدئي، ويعتمد وجوب الزكاة على بلوغ النصاب وتوافر الشروط الأخرى.",
+    "loadingPrice": "جاري تحميل السعر...",
+    "goldPriceUnit": "/جرام"
   }
+
 }

@@ -1,3 +1,4 @@
+
 import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -7,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
 import tw from "twrnc";
 
 import { useTheme } from "@/context/ThemeContext";
@@ -21,6 +23,12 @@ export default function SmartInsights({
   currency = "EGP",
 }: SmartInsightsProps) {
   const { colors } = useTheme();
+  const { t, i18n } = useTranslation();
+
+  const isRTL = i18n.language.startsWith("ar");
+
+  const textAlign = isRTL ? "right" : "left";
+  const writingDirection = isRTL ? "rtl" : "ltr";
 
   const [moneyAmount, setMoneyAmount] = useState("");
   const [goldGrams, setGoldGrams] = useState("");
@@ -30,19 +38,32 @@ export default function SmartInsights({
   const [goldPurity, setGoldPurity] = useState<18 | 21 | 22 | 24>(24);
 
   useEffect(() => {
+    let isMounted = true;
+
     async function loadGoldPrice() {
+      setLoadingPrice(true);
+
       try {
         const prices = await getZakatPrices(currency);
+
+        if (!isMounted) return;
+
         setGoldPrice(Number(prices.gold_price_per_gram) || 0);
         setNisabValue(Number(prices.nisab_gold_value) || 0);
       } catch (error) {
         console.error("Failed to load gold price:", error);
       } finally {
-        setLoadingPrice(false);
+        if (isMounted) {
+          setLoadingPrice(false);
+        }
       }
     }
 
     loadGoldPrice();
+
+    return () => {
+      isMounted = false;
+    };
   }, [currency]);
 
   const calculations = useMemo(() => {
@@ -50,17 +71,18 @@ export default function SmartInsights({
     const grams = Math.max(0, Number(goldGrams) || 0);
 
     const gold24KGrams = grams * (goldPurity / 24);
-
     const goldValue = gold24KGrams * goldPrice;
 
     const totalAssets = money + goldValue;
 
-    const moneyPercentage = totalAssets > 0 ? (money / totalAssets) * 100 : 0;
+    const moneyPercentage =
+      totalAssets > 0 ? (money / totalAssets) * 100 : 0;
 
     const goldPercentage =
       totalAssets > 0 ? (goldValue / totalAssets) * 100 : 0;
 
-    const eligibleForZakat = nisabValue > 0 && totalAssets >= nisabValue;
+    const eligibleForZakat =
+      nisabValue > 0 && totalAssets >= nisabValue;
 
     return {
       gold24KGrams,
@@ -74,37 +96,99 @@ export default function SmartInsights({
   }, [moneyAmount, goldGrams, goldPurity, goldPrice, nisabValue]);
 
   const formatMoney = (value: number) =>
-    new Intl.NumberFormat("en", {
+    new Intl.NumberFormat("en-US", {
       maximumFractionDigits: 2,
+      useGrouping:true
     }).format(value);
 
   const hasAssets = calculations.totalAssets > 0;
 
+ const inputStyle = [
+  tw`rounded-xl px-3 py-3`,
+  {
+    backgroundColor: colors.input,
+    color: colors.text,
+    borderWidth: 1,
+    borderColor: colors.border,
+    textAlign: "left" as const,
+    writingDirection: "ltr" as const,
+    fontVariant: ["tabular-nums"] as const,
+  },
+];
+
+  const labelStyle = [
+    tw`text-xs mb-2`,
+    {
+      color: colors.text,
+      textAlign,
+    },
+  ];
+
   return (
     <>
-      <Text style={[tw`text-xs font-bold mb-3`, { color: colors.accent }]}>
-        Quick calculation
+      <Text
+        style={[
+          tw`text-xs font-bold mb-3`,
+          {
+            color: colors.accent,
+            textAlign,
+          },
+        ]}
+      >
+        {t("smartInsights.sectionTitle")}
       </Text>
+
       <View
         style={[
           tw`rounded-3xl p-5 mb-6 border`,
-          { backgroundColor: colors.card, borderColor: colors.border , borderWidth: 1},
+          {
+            backgroundColor: colors.card,
+            borderColor: colors.border,
+            borderWidth: 1,
+          },
         ]}
       >
-        <View style={tw`flex-row items-center justify-between mb-1`}>
-          <Text style={[tw`text-lg font-bold`, { color: colors.primary }]}>
-            Quick Zakat Estimate
+        <View
+          style={[
+            tw`flex-row items-center justify-between mb-1`,
+            isRTL && tw`flex-row-reverse`,
+          ]}
+        >
+          <Text
+            style={[
+              tw`text-lg font-bold`,
+              {
+                color: colors.primary,
+                textAlign,
+              },
+            ]}
+          >
+            {t("smartInsights.title")}
           </Text>
         </View>
 
-        <Text style={[tw`text-sm mb-4`, { color: colors.secondaryText }]}>
-          Get a quick estimate of your zakat.
+        <Text
+          style={[
+            tw`text-sm mb-4`,
+            {
+              color: colors.secondaryText,
+              textAlign,
+              writingDirection,
+            },
+          ]}
+        >
+          {t("smartInsights.description")}
         </Text>
 
-        <View style={tw`flex-row gap-3`}>
+        <View
+          style={[
+            tw`flex-row gap-3`,
+            isRTL && tw`flex-row-reverse`,
+          ]}
+        >
           <View style={tw`flex-1`}>
-            <Text style={[tw`text-xs mb-2`, { color: colors.text }]}>
-              Money ({currency})
+            <Text style={labelStyle}>
+              {t("smartInsights.money")} ({currency})
             </Text>
 
             <TextInput
@@ -113,21 +197,13 @@ export default function SmartInsights({
               keyboardType="decimal-pad"
               placeholder="0"
               placeholderTextColor={colors.muted}
-              style={[
-                tw`rounded-xl px-3 py-3`,
-                {
-                  backgroundColor: colors.input,
-                  color: colors.text,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                },
-              ]}
+              style={inputStyle}
             />
           </View>
 
           <View style={tw`flex-1`}>
-            <Text style={[tw`text-xs mb-2`, { color: colors.text }]}>
-              Gold (grams)
+            <Text style={labelStyle}>
+              {t("smartInsights.gold")} ({t("smartInsights.grams")})
             </Text>
 
             <TextInput
@@ -136,20 +212,21 @@ export default function SmartInsights({
               keyboardType="decimal-pad"
               placeholder="0"
               placeholderTextColor={colors.muted}
-              style={[
-                tw`rounded-xl px-3 py-3`,
-                {
-                  backgroundColor: colors.input,
-                  color: colors.text,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                },
-              ]}
+              style={inputStyle}
             />
           </View>
         </View>
-        <Text style={[tw`text-xs my-3`, { color: colors.text }]}>
-          Gold purity
+
+        <Text
+          style={[
+            tw`text-xs my-3`,
+            {
+              color: colors.text,
+              textAlign,
+            },
+          ]}
+        >
+          {t("smartInsights.goldPurity")}
         </Text>
 
         <View style={tw`flex-row gap-2 mb-4`}>
@@ -161,7 +238,9 @@ export default function SmartInsights({
                 tw`flex-1 py-2 rounded-lg items-center`,
                 {
                   backgroundColor:
-                    goldPurity === purity ? colors.primary : colors.surface,
+                    goldPurity === purity
+                      ? colors.primary
+                      : colors.surface,
                   borderWidth: 1,
                   borderColor: colors.border,
                 },
@@ -169,7 +248,8 @@ export default function SmartInsights({
             >
               <Text
                 style={{
-                  color: goldPurity === purity ? "#FFFFFF" : colors.text,
+                  color:
+                    goldPurity === purity ? "#FFFFFF" : colors.text,
                   fontWeight: "600",
                 }}
               >
@@ -179,16 +259,37 @@ export default function SmartInsights({
           ))}
         </View>
 
-        <View style={tw`flex-row justify-between items-center mt-3`}>
-          <Text style={[tw`text-xs`, { color: colors.secondaryText }]}>
-            Current gold price
+        <View
+          style={[
+            tw`flex-row justify-between items-center mt-3`,
+            isRTL && tw`flex-row-reverse`,
+          ]}
+        >
+          <Text
+            style={[
+              tw`text-xs`,
+              {
+                color: colors.secondaryText,
+                textAlign,
+              },
+            ]}
+          >
+            {t("smartInsights.currentGoldPrice")}
           </Text>
 
           {loadingPrice ? (
             <ActivityIndicator size="small" color={colors.primary} />
           ) : (
-            <Text style={[tw`text-xs font-semibold`, { color: colors.text }]}>
-              {formatMoney(goldPrice)} {currency}/g
+            <Text
+              style={[
+                tw`text-xs font-semibold`,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
+              {formatMoney(goldPrice)} {currency}
+              {t("smartInsights.goldPriceUnit")}
             </Text>
           )}
         </View>
@@ -197,28 +298,53 @@ export default function SmartInsights({
           <View
             style={[
               tw`rounded-2xl p-3 mt-4`,
-              { backgroundColor: colors.surface },
+              {
+                backgroundColor: colors.surface,
+              },
             ]}
           >
-            <View style={tw`flex-row items-center`}>
+            <View
+              style={[
+                tw`flex-row items-center`,
+                isRTL && tw`flex-row-reverse`,
+              ]}
+            >
               <View style={tw`flex-1`}>
                 <Text
-                  style={[tw`text-xs mb-1`, { color: colors.secondaryText }]}
+                  style={[
+                    tw`text-xs mb-1`,
+                    {
+                      color: colors.secondaryText,
+                      textAlign,
+                    },
+                  ]}
                 >
-                  Estimated Zakat
+                  {t("smartInsights.estimatedZakat")}
                 </Text>
 
                 <Text
-                  style={[tw`text-xl font-bold`, { color: colors.primary }]}
+                  style={[
+                    tw`text-xl font-bold`,
+                    {
+                      color: colors.primary,
+                      textAlign,
+                    },
+                  ]}
                 >
                   {formatMoney(calculations.estimatedZakat)} {currency}
                 </Text>
 
                 <Text
-                  style={[tw`text-xs mt-1`, { color: colors.secondaryText }]}
+                  style={[
+                    tw`text-xs mt-1`,
+                    {
+                      color: colors.secondaryText,
+                      textAlign,
+                    },
+                  ]}
                 >
-                  Total assets: {formatMoney(calculations.totalAssets)}{" "}
-                  {currency}
+                  {t("smartInsights.totalAssets")}:{" "}
+                  {formatMoney(calculations.totalAssets)} {currency}
                 </Text>
               </View>
 
@@ -230,15 +356,23 @@ export default function SmartInsights({
               />
             </View>
 
-            <View style={tw`flex-row gap-4 mt-3`}>
+            <View
+              style={[
+                tw`flex-row gap-4 mt-3`,
+                isRTL && tw`flex-row-reverse`,
+              ]}
+            >
               <Text style={[tw`text-xs`, { color: colors.text }]}>
-                ● Money {calculations.moneyPercentage.toFixed(0)}%
+                ● {t("smartInsights.money")}{" "}
+                {calculations.moneyPercentage.toFixed(0)}%
               </Text>
 
               <Text style={[tw`text-xs`, { color: colors.text }]}>
-                ● Gold {calculations.goldPercentage.toFixed(0)}%
+                ● {t("smartInsights.gold")}{" "}
+                {calculations.goldPercentage.toFixed(0)}%
               </Text>
             </View>
+
             {!loadingPrice && nisabValue > 0 && (
               <View style={tw`mt-3`}>
                 <Text
@@ -248,23 +382,39 @@ export default function SmartInsights({
                       color: calculations.eligibleForZakat
                         ? colors.primary
                         : colors.secondaryText,
+                      textAlign,
                     },
                   ]}
                 >
                   {calculations.eligibleForZakat
-                    ? "Assets reached Nisab"
-                    : "Below Nisab"}
+                    ? t("smartInsights.nisabReached")
+                    : t("smartInsights.belowNisab")}
                 </Text>
 
                 <Text
-                  style={[tw`text-xs mt-1`, { color: colors.secondaryText }]}
+                  style={[
+                    tw`text-xs mt-1`,
+                    {
+                      color: colors.secondaryText,
+                      textAlign,
+                    },
+                  ]}
                 >
-                  Nisab: {formatMoney(nisabValue)} {currency}
+                  {t("smartInsights.nisabValue")}:{" "}
+                  {formatMoney(nisabValue)} {currency}
                 </Text>
+
                 <Text
-                  style={[tw`text-xs mt-1`, { color: colors.secondaryText }]}
+                  style={[
+                    tw`text-xs mt-1`,
+                    {
+                      color: colors.secondaryText,
+                      textAlign,
+                    },
+                  ]}
                 >
-                  Gold equivalent: {calculations.gold24KGrams.toFixed(2)}g (24K)
+                  {t("smartInsights.goldEquivalent")}:{" "}
+                  {calculations.gold24KGrams.toFixed(2)}g (24K)
                 </Text>
               </View>
             )}
@@ -275,17 +425,28 @@ export default function SmartInsights({
           onPress={() => router.push("/zakat-calculation")}
           style={[
             tw`rounded-xl py-3 mt-4 flex-row items-center justify-center`,
-            { backgroundColor: colors.primary },
+            {
+              backgroundColor: colors.primary,
+            },
           ]}
         >
           <Text style={tw`text-white font-semibold`}>
-            Calculate Zakat in Detail →
+            {t("smartInsights.calculateDetails")}
+            {isRTL ? " ←" : " →"}
           </Text>
         </Pressable>
 
-        <Text style={[tw`text-xs mt-3`, { color: colors.secondaryText }]}>
-          This is a quick estimate. Zakat eligibility depends on nisab and other
-          conditions.
+        <Text
+          style={[
+            tw`text-xs mt-3`,
+            {
+              color: colors.secondaryText,
+              textAlign,
+              writingDirection,
+            },
+          ]}
+        >
+          {t("smartInsights.disclaimer")}
         </Text>
       </View>
     </>
